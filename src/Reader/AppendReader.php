@@ -1,8 +1,8 @@
 <?php
 
-namespace Port\Reader;
+namespace Import\Reader;
 
-use Port\Reader;
+use Import\Reader;
 
 /**
  * Read data from multiple Readers in one workflow.

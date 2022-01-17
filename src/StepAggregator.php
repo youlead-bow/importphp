@@ -1,13 +1,8 @@
 <?php
 
-namespace Port\Steps;
+namespace Import;
 
-use Port\Exception;
-use Port\Reader;
-use Port\Result;
-use Port\Steps\Step\PriorityStep;
-use Port\Workflow;
-use Port\Writer;
+use Import\Steps\Step\PriorityStep;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;

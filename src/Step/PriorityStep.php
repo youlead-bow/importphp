@@ -1,8 +1,8 @@
 <?php
 
-namespace Port\Steps\Step;
+namespace Import\Step;
 
-use Port\Steps\Step;
+use Import\Step;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>

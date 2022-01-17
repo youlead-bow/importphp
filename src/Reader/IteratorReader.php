@@ -1,8 +1,8 @@
 <?php
 
-namespace Port\Reader;
+namespace Import\Reader;
 
-use Port\Reader;
+use Import\Reader;
 
 /**
  * Use an iterator as a reader

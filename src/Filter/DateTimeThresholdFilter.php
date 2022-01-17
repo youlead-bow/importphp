@@ -1,8 +1,8 @@
 <?php
 
-namespace Port\Filter;
+namespace Import\Filter;
 
-use Port\ValueConverter\DateTimeValueConverter;
+use Import\ValueConverter\DateTimeValueConverter;
 
 /**
  * This filter can be used to filter out some items from a specific date.

@@ -1,14 +1,13 @@
 <?php
 
-namespace Port\Doctrine\Exception;
+namespace Import\Exception;
 
-use Port\Exception;
+use Import\Exception;
+use JetBrains\PhpStorm\Pure;
 
 class UnsupportedDatabaseTypeException extends \Exception implements Exception
 {
-    /**
-     * @param array $duplicates
-     */
+    #[Pure]
     public function __construct($objectManager)
     {
         $message = sprintf(

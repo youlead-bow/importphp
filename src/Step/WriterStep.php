@@ -1,9 +1,9 @@
 <?php
 
-namespace Port\Steps\Step;
+namespace Import\Step;
 
-use Port\Steps\Step;
-use Port\Writer;
+use Import\Step;
+use Import\Writer;
 
 /**
  * @author Márk Sági-Kazár <mark.sagikazar@gmail.com>

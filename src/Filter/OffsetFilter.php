@@ -1,6 +1,6 @@
 <?php
 
-namespace Port\Filter;
+namespace Import\Filter;
 
 /**
  * This filter can be used to filter out some items from the beginning and/or

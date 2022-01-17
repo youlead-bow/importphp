@@ -1,6 +1,6 @@
 <?php
 
-namespace Port;
+namespace Import;
 
 /**
  * Iterator that reads data to be imported

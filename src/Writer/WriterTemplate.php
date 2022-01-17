@@ -1,6 +1,6 @@
 <?php
 
-namespace Port\Writer;
+namespace Import\Writer;
 
 /**
  * This template can be overridden in concrete implementations

@@ -1,9 +1,8 @@
 <?php
 
-namespace Port\Dbal;
+namespace Import\Reader;
 
 use Doctrine\DBAL\Connection;
-use Port\Reader\ReaderFactory;
 
 /**
  * Factory that creates DbalReaders

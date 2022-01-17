@@ -1,6 +1,6 @@
 <?php
 
-namespace Port\Writer;
+namespace Import\Writer;
 
 /**
  * Class allowing multiple writers to write in same stream

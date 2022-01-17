@@ -1,8 +1,6 @@
 <?php
 
-namespace Port;
-
-use Port\Exception\ExceptionInterface;
+namespace Import;
 
 /**
  * Simple Container for Workflow Results

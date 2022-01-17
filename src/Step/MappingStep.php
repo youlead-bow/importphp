@@ -1,9 +1,9 @@
 <?php
 
-namespace Port\Steps\Step;
+namespace Import\Step;
 
-use Port\Exception\MappingException;
-use Port\Steps\Step;
+use Import\Exception\MappingException;
+use Import\Step;
 use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
 use Symfony\Component\PropertyAccess\PropertyAccessor;

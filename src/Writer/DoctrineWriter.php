@@ -1,9 +1,9 @@
 <?php
 
-namespace Port\Doctrine;
+namespace Import\Writer;
 
-use Port\Doctrine\Exception\UnsupportedDatabaseTypeException;
-use Port\Writer;
+use Import\Doctrine\Exception\UnsupportedDatabaseTypeException;
+use Import\Writer;
 use Doctrine\Common\Util\Inflector;
 use Doctrine\DBAL\Logging\SQLLogger;
 use Doctrine\Common\Persistence\ObjectManager;

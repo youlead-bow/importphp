@@ -1,8 +1,8 @@
 <?php
 
-namespace Port\Reader;
+namespace Import\Reader;
 
-use Port\Reader;
+use Import\Reader;
 
 /**
  * Reader that provides the count of total items

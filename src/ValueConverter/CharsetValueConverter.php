@@ -1,8 +1,8 @@
 <?php
 
-namespace Port\ValueConverter;
+namespace Import\ValueConverter;
 
-use Port\Exception\UnexpectedTypeException;
+use Import\Exception\UnexpectedTypeException;
 
 /**
  * Convert a value in a specific charset

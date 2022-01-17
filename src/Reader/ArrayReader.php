@@ -1,6 +1,6 @@
 <?php
 
-namespace Port\Reader;
+namespace Import\Reader;
 
 /**
  * Reads an array

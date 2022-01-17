@@ -1,8 +1,8 @@
 <?php
 
-namespace Port\Writer;
+namespace Import\Writer;
 
-use Port\Writer;
+use Import\Writer;
 
 /**
  * This class writes an item into an array that was passed by reference

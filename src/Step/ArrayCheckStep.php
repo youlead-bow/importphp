@@ -1,9 +1,9 @@
 <?php
 
-namespace Port\Steps\Step;
+namespace Import\Step;
 
-use Port\Exception\UnexpectedTypeException;
-use Port\Steps\Step;
+use Import\Exception\UnexpectedTypeException;
+use Import\Step;
 
 /**
  * @author Márk Sági-Kazár <mark.sagikazar@gmail.com>

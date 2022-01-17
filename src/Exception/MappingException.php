@@ -1,8 +1,8 @@
 <?php
 
-namespace Port\Exception;
+namespace Import\Exception;
 
-use Port\Exception;
+use Import\Exception;
 
 /**
  * Description of MappingException

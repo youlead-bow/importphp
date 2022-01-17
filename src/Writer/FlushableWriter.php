@@ -1,8 +1,8 @@
 <?php
 
-namespace Port\Writer;
+namespace Import\Writer;
 
-use Port\Writer;
+use Import\Writer;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>

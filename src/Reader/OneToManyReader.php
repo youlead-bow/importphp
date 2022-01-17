@@ -1,9 +1,9 @@
 <?php
 
-namespace Port\Reader;
+namespace Import\Reader;
 
-use Port\Reader;
-use Port\Exception\ReaderException;
+use Import\Reader;
+use Import\Exception\ReaderException;
 
 /**
  * Takes multiple readers for processing in the same workflow

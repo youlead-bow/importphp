@@ -1,11 +1,11 @@
 <?php
 
-namespace Port\Steps\Step;
+namespace Import\Step;
 
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Validator\Constraints;
 use Symfony\Component\Validator\Constraint;
-use Port\Exception\ValidationException;
+use Import\Exception\ValidationException;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>

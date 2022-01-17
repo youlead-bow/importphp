@@ -1,11 +1,11 @@
 <?php
 
-namespace Port\Filter;
+namespace Import\Filter;
 
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints;
-use Port\Exception\ValidationException;
+use Import\Exception\ValidationException;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>

@@ -1,6 +1,6 @@
 <?php
 
-namespace Port\ValueConverter;
+namespace Import\ValueConverter;
 
 use Doctrine\Common\Persistence\ObjectRepository;
 
