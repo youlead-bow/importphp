@@ -1,0 +1,29 @@
+{
+    "name": "flavou45/importphp",
+    "description": "Data import/export workflow ",
+    "keywords": [ "data", "import", "export", "doctrine" ],
+    "license": "MIT",
+    "homepage": "https://github.com/flavou45/importphp",	
+    "require": {
+        "php": ">=8.0",
+        "psr/log": "~1.0",
+		"seld/signal-handler": "^1.0",
+        "symfony/property-access": "^5.0|^6.0",
+        "symfony/validator": "^5.0|^6.0"
+		"doctrine/common": "^3.2"
+		"doctrine/dbal": "^3.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Import\\": "src/"
+        }
+    },
+    "require-dev": {
+        "ext-iconv": "*",
+        "ext-mbstring": "*",
+		"ext-sqlite3": "*",
+        "doctrine/instantiator": "^1.4",
+        "doctrine/common": "^3.2"
+		"doctrine/orm": "^2.11"
+    }
+}
