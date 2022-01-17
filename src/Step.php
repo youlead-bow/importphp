@@ -15,5 +15,5 @@ interface Step
      *
      * @return boolean False return value means the item is skipped
      */
-    public function process($item, callable $next): bool;
+    public function process(mixed $item, callable $next): bool;
 }

@@ -3,9 +3,10 @@
 namespace Import\ValueConverter;
 
 use Import\Exception\UnexpectedTypeException;
-use Symfony\Component\PropertyAccess\PropertyPath;
+use RuntimeException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
+use Symfony\Component\PropertyAccess\PropertyPath;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz
@@ -46,7 +47,7 @@ class ObjectConverter
     }
 
     /**
-     * {@inheritdoc}
+     * {}
      */
     public function __invoke($input)
     {
@@ -55,7 +56,7 @@ class ObjectConverter
         }
 
         if (null === $this->propertyPath && !method_exists($input, '__toString')) {
-            throw new \RuntimeException;
+            throw new RuntimeException;
         }
 
         if (null === $this->propertyPath) {

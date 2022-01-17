@@ -2,7 +2,9 @@
 
 namespace Import\Filter;
 
+use DateTime;
 use Import\ValueConverter\DateTimeValueConverter;
+use LogicException;
 
 /**
  * This filter can be used to filter out some items from a specific date.
@@ -16,7 +18,7 @@ class DateTimeThresholdFilter
     /**
      * Threshold dates strictly before this date will be filtered out
      */
-    protected ?\DateTime $threshold;
+    protected ?DateTime $threshold;
 
     /**
      * Used to convert the values in the time column
@@ -32,15 +34,15 @@ class DateTimeThresholdFilter
 
     /**
      * @param DateTimeValueConverter $valueConverter
-     * @param \DateTime|null         $threshold
-     * @param string                 $timeColumnName
-     * @param integer                $priority
+     * @param DateTime|null         $threshold
+     * @param string $timeColumnName
+     * @param integer $priority
      */
     public function __construct(
         DateTimeValueConverter $valueConverter,
-        \DateTime $threshold = null,
-        $timeColumnName = 'updated_at',
-        $priority = 512
+        DateTime $threshold = null,
+        string $timeColumnName = 'updated_at',
+        int $priority = 512
     ) {
         $this->valueConverter = $valueConverter;
         $this->threshold = $threshold;
@@ -49,12 +51,12 @@ class DateTimeThresholdFilter
     }
 
     /**
-     * {@inheritdoc}
+     * {}
      */
     public function __invoke(array $item): bool
     {
         if ($this->threshold == null) {
-            throw new \LogicException('Make sure you set a threshold');
+            throw new LogicException('Make sure you set a threshold');
         }
 
         $threshold = call_user_func($this->valueConverter, $item[$this->timeColumnName]);
@@ -66,9 +68,9 @@ class DateTimeThresholdFilter
      * Useful if you build a filter service, and want to set the threshold
      * dynamically afterwards.
      *
-     * @param \DateTime $value
+     * @param DateTime $value
      */
-    public function setThreshold(\DateTime $value)
+    public function setThreshold(DateTime $value)
     {
         $this->threshold = $value;
     }

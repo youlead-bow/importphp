@@ -2,10 +2,11 @@
 
 namespace Import\ValueConverter;
 
+use DateTime;
 use Import\Exception\UnexpectedValueException;
 
 /**
- * Convert an date time object into string
+ * Convert a date time object into string
  */
 class DateTimeToStringValueConverter
 {
@@ -29,13 +30,13 @@ class DateTimeToStringValueConverter
      * using specified format
      * @throws UnexpectedValueException
      */
-    public function __invoke(mixed $input): \DateTime|string|null
+    public function __invoke(mixed $input): DateTime|string|null
     {
         if (!$input) {
             return null;
         }
 
-        if (!($input instanceof \DateTime)) {
+        if (!($input instanceof DateTime)) {
             throw new UnexpectedValueException('Input must be DateTime object.');
         }
 

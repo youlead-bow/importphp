@@ -25,7 +25,7 @@ class StreamMergeWriter extends AbstractStreamWriter
      */
     public function setDiscriminantField(string $discriminantField): static
     {
-        $this->discriminantField = (string) $discriminantField;
+        $this->discriminantField = $discriminantField;
 
         return $this;
     }

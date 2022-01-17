@@ -2,12 +2,15 @@
 
 namespace Import;
 
+use Closure;
+use DateTime;
 use Import\Step\PriorityStep;
 use JetBrains\PhpStorm\Pure;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 use Seld\Signal\SignalHandler;
+use SplObjectStorage;
 
 /**
  * A mediator between a reader and one or more writers and converters
@@ -23,7 +26,7 @@ class StepAggregator implements Workflow, LoggerAwareInterface
     /**
      * Identifier for the Import/Export
      */
-    private ?string $name = null;
+    private ?string $name;
 
     private bool $skipItemOnFailure = false;
 
@@ -36,7 +39,7 @@ class StepAggregator implements Workflow, LoggerAwareInterface
      * @param string|null $name
      */
     #[Pure]
-    public function __construct(Reader $reader, string $name = null)
+    public function __construct(Reader $reader, ?string $name = null)
     {
         $this->name = $name;
         $this->reader = $reader;
@@ -83,8 +86,8 @@ class StepAggregator implements Workflow, LoggerAwareInterface
     public function process(): Result
     {
         $count      = 0;
-        $exceptions = new \SplObjectStorage();
-        $startTime  = new \DateTime;
+        $exceptions = new SplObjectStorage();
+        $startTime  = new DateTime;
 
         $signal = SignalHandler::create(['SIGTERM', 'SIGINT'], $this->logger);
 
@@ -95,22 +98,13 @@ class StepAggregator implements Workflow, LoggerAwareInterface
         $pipeline = $this->buildPipeline();
 
         // Read all items
-        foreach ($this->reader as $index => $item) {
-            try {
-                if ($signal->isTriggered()) {
-                    break;
-                }
+        foreach ($this->reader as $item) {
+            if ($signal->isTriggered()) {
+                break;
+            }
 
-                if (false === $pipeline($item)) {
-                    continue;
-                }
-            } catch(Exception $e) {
-                if (!$this->skipItemOnFailure) {
-                    throw $e;
-                }
-
-                $exceptions->attach($e, $index);
-                $this->logger->error($e->getMessage());
+            if (false === $pipeline($item)) {
+                continue;
             }
 
             $count++;
@@ -120,11 +114,11 @@ class StepAggregator implements Workflow, LoggerAwareInterface
             $writer->finish();
         }
 
-        return new Result($this->name, $startTime, new \DateTime, $count, $exceptions);
+        return new Result($this->name, $startTime, new DateTime, $count, $exceptions);
     }
 
     /**
-     * Sets the value which determines whether the item should be skipped when error occures
+     * Sets the value which determines whether the item should be skipped when error occurs
      *
      * @param boolean $skipItemOnFailure When true skip current item on process exception and log the error
      *
@@ -145,7 +139,7 @@ class StepAggregator implements Workflow, LoggerAwareInterface
     /**
      * Builds the pipeline
      */
-    private function buildPipeline(): callable|\Closure
+    private function buildPipeline(): callable|Closure
     {
         $nextCallable = function ($item) {
             // the final callable is a no-op

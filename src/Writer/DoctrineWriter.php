@@ -2,12 +2,19 @@
 
 namespace Import\Writer;
 
-use Import\Doctrine\Exception\UnsupportedDatabaseTypeException;
-use Import\Writer;
-use Doctrine\Common\Util\Inflector;
+use DateTime;
+use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Logging\SQLLogger;
-use Doctrine\Common\Persistence\ObjectManager;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Inflector\InflectorFactory;
+use Doctrine\Inflector\Language;
+use Doctrine\ORM\EntityManager;
+use Doctrine\Persistence\Mapping\ClassMetadata;
+use Doctrine\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectRepository;
+use Import\Exception\UnsupportedDatabaseTypeException;
+use Import\Writer;
+use InvalidArgumentException;
+use RuntimeException;
 
 /**
  * A bulk Doctrine writer
@@ -21,71 +28,56 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
 {
     /**
      * Doctrine object manager
-     *
-     * @var ObjectManager
      */
-    protected $objectManager;
+    protected ?ObjectManager $objectManager;
 
     /**
      * Fully qualified model name
-     *
-     * @var string
      */
-    protected $objectName;
+    protected string $objectName;
 
     /**
      * Doctrine object repository
-     *
-     * @var ObjectRepository
      */
-    protected $objectRepository;
+    protected ObjectRepository $objectRepository;
 
-    /**
-     * @var ClassMetadata
-     */
-    protected $objectMetadata;
+
+    protected ClassMetadata $objectMetadata;
 
     /**
      * Original Doctrine logger
-     *
-     * @var SQLLogger
      */
-    protected $originalLogger;
+    protected SQLLogger $originalLogger;
 
     /**
      * Whether to truncate the table first
-     *
-     * @var boolean
      */
-    protected $truncate = true;
+    protected bool $truncate = true;
 
     /**
-     * List of fields used to lookup an object
-     *
-     * @var array
+     * List of fields used to look up an object
      */
-    protected $lookupFields = [];
+    protected array $lookupFields = [];
 
     /**
      * Method used for looking up the item
-     *
-     * @var array
      */
-    protected $lookupMethod;
+    protected array $lookupMethod;
 
     /**
      * Constructor
      *
      * @param ObjectManager $objectManager
-     * @param string        $objectName
-     * @param string|array  $index         Field or fields to find current entities by
-     * @param string        $lookupMethod  Method used for looking up the item
+     * @param string $objectName
+     * @param array|string|null $index Field or fields to find current entities by
+     * @param string $lookupMethod Method used for looking up the item
+     * @throws UnsupportedDatabaseTypeException
      */
     public function __construct(
         ObjectManager $objectManager,
-        $objectName,
-        $index = null,
-        $lookupMethod = 'findOneBy'
+        string $objectName,
+        array|string $index = null,
+        string $lookupMethod = 'findOneBy'
     ) {
         $this->ensureSupportedObjectManager($objectManager);
         $this->objectManager = $objectManager;
@@ -102,7 +94,7 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
         }
 
         if (!method_exists($this->objectRepository, $lookupMethod)) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 sprintf(
                     'Repository %s has no method %s',
                     get_class($this->objectRepository),
@@ -116,19 +108,15 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
     /**
      * @return boolean
      */
-    public function getTruncate()
+    public function getTruncate(): bool
     {
         return $this->truncate;
     }
 
     /**
      * Set whether to truncate the table first
-     *
-     * @param boolean $truncate
-     *
-     * @return $this
      */
-    public function setTruncate($truncate)
+    public function setTruncate(bool $truncate): static
     {
         $this->truncate = $truncate;
 
@@ -137,10 +125,8 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
 
     /**
      * Disable truncation
-     *
-     * @return $this
      */
-    public function disableTruncate()
+    public function disableTruncate(): static
     {
         $this->truncate = false;
 
@@ -149,8 +135,7 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
 
     /**
      * Disable Doctrine logging
-     *
-     * @return $this
+     * @throws Exception
      */
     public function prepare()
     {
@@ -197,12 +182,12 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
      *
      * @return object
      */
-    protected function getNewInstance()
+    protected function getNewInstance(): object
     {
         $className = $this->objectMetadata->getName();
 
         if (class_exists($className) === false) {
-            throw new \RuntimeException('Unable to create new instance of ' . $className);
+            throw new RuntimeException('Unable to create new instance of ' . $className);
         }
 
         return new $className;
@@ -210,28 +195,21 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
 
     /**
      * Call a setter of the object
-     *
-     * @param object $object
-     * @param mixed  $value
-     * @param string $setter
      */
-    protected function setValue($object, $value, $setter)
+    protected function setValue(object $object, mixed $value, string $setter)
     {
         if (method_exists($object, $setter)) {
             $object->$setter($value);
         }
     }
 
-    /**
-     * @param array  $item
-     * @param object $object
-     */
-    protected function updateObject(array $item, $object)
+    protected function updateObject(array $item, object $object)
     {
+        $inflector = InflectorFactory::createForLanguage(Language::FRENCH)->build();
         $fieldNames = array_merge($this->objectMetadata->getFieldNames(), $this->objectMetadata->getAssociationNames());
         foreach ($fieldNames as $fieldName) {
             $value = null;
-            $classifiedFieldName = Inflector::classify($fieldName);
+            $classifiedFieldName = $inflector->classify($fieldName);
             if (isset($item[$fieldName])) {
                 $value = $item[$fieldName];
             }
@@ -240,7 +218,7 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
                 continue;
             }
 
-            if (!($value instanceof \DateTime)
+            if (!($value instanceof DateTime)
                 || $value != $this->objectMetadata->getFieldValue($object, $fieldName)
             ) {
                 $setter = 'set' . $classifiedFieldName;
@@ -251,11 +229,8 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
 
     /**
      * Add the associated objects in case the item have for persist its relation
-     *
-     * @param array  $item
-     * @param object $object
      */
-    protected function loadAssociationObjectsToObject(array $item, $object)
+    protected function loadAssociationObjectsToObject(array $item, object $object)
     {
         foreach ($this->objectMetadata->getAssociationMappings() as $associationMapping) {
 
@@ -275,17 +250,14 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
 
     /**
      * Truncate the database table for this writer
+     * @throws Exception
      */
     protected function truncateTable()
     {
-        if ($this->objectManager instanceof \Doctrine\ORM\EntityManager) {
-            $tableName = $this->objectMetadata->table['name'];
-            $connection = $this->objectManager->getConnection();
-            $query = $connection->getDatabasePlatform()->getTruncateTableSQL($tableName, true);
-            $connection->executeQuery($query);
-        } elseif ($this->objectManager instanceof \Doctrine\ODM\MongoDB\DocumentManager) {
-            $this->objectManager->getDocumentCollection($this->objectName)->remove(array());
-        }
+        $tableName = $this->objectMetadata->table['name'];
+        $connection = $this->objectManager->getConnection();
+        $query = $connection->getDatabasePlatform()->getTruncateTableSQL($tableName, true);
+        $connection->executeQuery($query);
     }
 
     /**
@@ -293,12 +265,11 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
      */
     protected function disableLogging()
     {
-        //TODO: do we need to add support for MongoDB logging?
-        if (!($this->objectManager instanceof \Doctrine\ORM\EntityManager)) return;
+        if (!($this->objectManager instanceof EntityManager)) return;
 
         $config = $this->objectManager->getConnection()->getConfiguration();
         $this->originalLogger = $config->getSQLLogger();
-        $config->setSQLLogger(null);
+        $config->setSQLLogger();
     }
 
     /**
@@ -306,19 +277,13 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
      */
     protected function reEnableLogging()
     {
-        //TODO: do we need to add support for MongoDB logging?
-        if (!($this->objectManager instanceof \Doctrine\ORM\EntityManager)) return;
+        if (!($this->objectManager instanceof EntityManager)) return;
 
         $config = $this->objectManager->getConnection()->getConfiguration();
         $config->setSQLLogger($this->originalLogger);
     }
 
-    /**
-     * @param array $item
-     *
-     * @return object
-     */
-    protected function findOrCreateItem(array $item)
+    protected function findOrCreateItem(array $item): object
     {
         $object = null;
         // If the table was not truncated to begin with, find current object
@@ -343,11 +308,12 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
         return $object;
     }
 
-    protected function ensureSupportedObjectManager(ObjectManager $objectManager)
+    /**
+     * @throws UnsupportedDatabaseTypeException
+     */
+    protected function ensureSupportedObjectManager(?ObjectManager $objectManager)
     {
-        if (!($objectManager instanceof \Doctrine\ORM\EntityManager
-            || $objectManager instanceof \Doctrine\ODM\MongoDB\DocumentManager)
-        ) {
+        if (!($objectManager instanceof EntityManager)) {
             throw new UnsupportedDatabaseTypeException($objectManager);
         }
     }

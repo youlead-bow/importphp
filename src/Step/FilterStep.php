@@ -3,17 +3,18 @@
 namespace Import\Step;
 
 use Import\Step;
+use SplPriorityQueue;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
  */
 class FilterStep implements Step
 {
-    private \SplPriorityQueue $filters;
+    private SplPriorityQueue $filters;
 
     public function __construct()
     {
-        $this->filters = new \SplPriorityQueue();
+        $this->filters = new SplPriorityQueue();
     }
 
     /**
@@ -31,7 +32,7 @@ class FilterStep implements Step
     /**
      * {@inheritdoc}
      */
-    public function process($item, callable $next): bool
+    public function process(mixed $item, callable $next): bool
     {
         foreach (clone $this->filters as $filter) {
             if (false === call_user_func($filter, $item)) {

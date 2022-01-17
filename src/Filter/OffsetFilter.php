@@ -21,17 +21,17 @@ class OffsetFilter
     protected bool $maxLimitHit = false;
 
     /**
-     * @param integer      $offset 0-based index of the item to start read from
+     * @param integer $offset 0-based index of the item to start read from
      * @param integer|null $limit  Maximum count of items to read. null = no limit
      */
-    public function __construct($offset = 0, $limit = null)
+    public function __construct(int $offset = 0, ?int $limit = null)
     {
         $this->offset = $offset;
         $this->limit = $limit;
     }
 
     /**
-     * {@inheritdoc}
+     * {}
      */
     public function __invoke(array $item): bool
     {

@@ -2,14 +2,16 @@
 
 namespace Import\Reader;
 
+use AppendIterator;
 use Import\Reader;
+use Iterator;
 
 /**
  * Read data from multiple Readers in one workflow.
  *
  * @author Márk Sági-Kazár <mark.sagikazar@gmail.com>
  */
-final class AppendReader extends \AppendIterator implements Reader
+final class AppendReader extends AppendIterator implements Reader
 {
     /**
      * @param Reader[] $readers
@@ -36,7 +38,7 @@ final class AppendReader extends \AppendIterator implements Reader
     /**
      * {@inheritdoc}
      */
-    public function append(\Iterator|Reader $iterator)
+    public function append(Iterator|Reader $iterator)
     {
         $this->addReader($iterator);
     }

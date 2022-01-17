@@ -2,10 +2,10 @@
 
 namespace Import\Step;
 
-use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Component\Validator\Constraints;
-use Symfony\Component\Validator\Constraint;
 use Import\Exception\ValidationException;
+use Symfony\Component\Validator\Constraint;
+use Symfony\Component\Validator\Constraints;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
@@ -79,7 +79,7 @@ class ValidatorStep implements PriorityStep
      * {@inheritdoc}
      * @throws ValidationException
      */
-    public function process($item, callable $next): bool
+    public function process(mixed $item, callable $next): bool
     {
         $this->line++;
 
@@ -106,7 +106,7 @@ class ValidatorStep implements PriorityStep
     }
 
     /**
-     * {@inheritdoc}
+     * {}
      */
     public function getPriority(): int
     {

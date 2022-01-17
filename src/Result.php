@@ -2,6 +2,10 @@
 
 namespace Import;
 
+use DateInterval;
+use DateTime;
+use SplObjectStorage;
+
 /**
  * Simple Container for Workflow Results
  *
@@ -14,11 +18,11 @@ class Result
      */
     protected string $name;
 
-    protected \DateTime $startTime;
+    protected DateTime $startTime;
 
-    protected \DateTime $endTime;
+    protected DateTime $endTime;
 
-    protected \DateInterval $elapsed;
+    protected DateInterval $elapsed;
 
     protected int $errorCount = 0;
 
@@ -26,16 +30,16 @@ class Result
 
     protected int $totalProcessedCount = 0;
 
-    protected \SplObjectStorage $exceptions;
+    protected SplObjectStorage $exceptions;
 
     /**
      * @param string $name
-     * @param \DateTime         $startTime
-     * @param \DateTime         $endTime
+     * @param DateTime $startTime
+     * @param DateTime $endTime
      * @param integer $totalCount
-     * @param \SplObjectStorage $exceptions
+     * @param SplObjectStorage $exceptions
      */
-    public function __construct(string $name, \DateTime $startTime, \DateTime $endTime, int $totalCount, \SplObjectStorage $exceptions)
+    public function __construct(string $name, DateTime $startTime, DateTime $endTime, int $totalCount, SplObjectStorage $exceptions)
     {
         $this->name                = $name;
         $this->startTime           = $startTime;
@@ -52,17 +56,17 @@ class Result
         return $this->name;
     }
 
-    public function getStartTime(): \DateTime
+    public function getStartTime(): DateTime
     {
         return $this->startTime;
     }
 
-    public function getEndTime(): \DateTime
+    public function getEndTime(): DateTime
     {
         return $this->endTime;
     }
 
-    public function getElapsed(): \DateInterval
+    public function getElapsed(): DateInterval
     {
         return $this->elapsed;
     }
@@ -87,7 +91,7 @@ class Result
         return $this->errorCount > 0;
     }
 
-    public function getExceptions(): \SplObjectStorage
+    public function getExceptions(): SplObjectStorage
     {
         return $this->exceptions;
     }

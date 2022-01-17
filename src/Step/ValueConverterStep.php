@@ -28,7 +28,7 @@ class ValueConverterStep implements Step
     /**
      * {@inheritdoc}
      */
-    public function process($item, callable $next): bool
+    public function process(mixed $item, callable $next): bool
     {
         $accessor = new PropertyAccessor();
 

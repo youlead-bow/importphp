@@ -3,7 +3,6 @@
 namespace Import\Exception;
 
 use Import\Exception;
-use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 /**

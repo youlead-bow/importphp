@@ -2,7 +2,7 @@
 
 namespace Import\ValueConverter;
 
-use Import\Exception\UnexpectedTypeException;
+use RuntimeException;
 
 /**
  * Convert a value in a specific charset
@@ -26,7 +26,7 @@ class CharsetValueConverter
     }
 
     /**
-     * {@inheritdoc}
+     * {}
      */
     public function __invoke($input): array|bool|string|null
     {
@@ -38,6 +38,6 @@ class CharsetValueConverter
             return iconv($this->inCharset, $this->charset, $input);
         }
 
-        throw new \RuntimeException('Could not convert the charset. Please install the mbstring or iconv extension!');
+        throw new RuntimeException('Could not convert the charset. Please install the mbstring or iconv extension!');
     }
 }

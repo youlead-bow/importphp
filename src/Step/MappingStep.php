@@ -14,13 +14,13 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
  */
 class MappingStep implements Step
 {
-    private array $mappings = [];
+    private array $mappings;
 
     private PropertyAccessor|PropertyAccessorInterface $accessor;
 
     /**
-     * @param array                     $mappings
-     * @param PropertyAccessorInterface $accessor
+     * @param array $mappings
+     * @param PropertyAccessorInterface|null $accessor
      */
     public function __construct(array $mappings = [], PropertyAccessorInterface $accessor = null)
     {
@@ -46,7 +46,7 @@ class MappingStep implements Step
      *
      * @throws MappingException
      */
-    public function process($item, callable $next): bool
+    public function process(mixed $item, callable $next): bool
     {
         try {
             foreach ($this->mappings as $from => $to) {
@@ -56,7 +56,7 @@ class MappingStep implements Step
                 $from = str_replace(['[',']'], '', $from);
 
                 // Check if $item is an array, because properties can't be unset.
-                // So we don't call unset for objects to prevent side affects.
+                // So we don't call unset for objects to prevent side effects.
                 // Also, we don't have to unset the property if the key is the same
                 if (is_array($item) && array_key_exists($from, $item) && $from !== str_replace(['[',']'], '', $to)) {
                     unset($item[$from]);

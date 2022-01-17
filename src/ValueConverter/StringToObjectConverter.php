@@ -26,7 +26,7 @@ class StringToObjectConverter
     }
 
     /**
-     * {@inheritdoc}
+     * {}
      */
     public function __invoke($input)
     {

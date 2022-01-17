@@ -73,7 +73,7 @@ abstract class AbstractStreamWriter implements Writer
      */
     public function setCloseStreamOnFinish(bool $closeStreamOnFinish = true): static
     {
-        $this->closeStreamOnFinish = (bool) $closeStreamOnFinish;
+        $this->closeStreamOnFinish = $closeStreamOnFinish;
 
         return $this;
     }

@@ -2,8 +2,8 @@
 
 namespace Import\Reader;
 
-use Import\Reader;
 use Import\Exception\ReaderException;
+use Import\Reader;
 
 /**
  * Takes multiple readers for processing in the same workflow

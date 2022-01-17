@@ -2,6 +2,8 @@
 
 namespace Import\ValueConverter;
 
+use InvalidArgumentException;
+
 /**
  * Converts a nested array using a converter-map
  *
@@ -20,12 +22,12 @@ class ArrayValueConverterMap
     }
 
     /**
-     * {@inheritdoc}
+     * {}
      */
     public function __invoke($input): array
     {
         if (!is_array($input)) {
-            throw new \InvalidArgumentException('Input of a ArrayValueConverterMap must be an array');
+            throw new InvalidArgumentException('Input of a ArrayValueConverterMap must be an array');
         }
 
         foreach ($input as $key => $item) {

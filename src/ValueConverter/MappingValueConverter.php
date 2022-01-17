@@ -9,12 +9,12 @@ use Import\Exception\UnexpectedValueException;
  */
 class MappingValueConverter
 {
-    private array $mapping = [];
+    private array $mapping;
 
     /**
      * @param array $mapping
      */
-    public function __construct(array $mapping)
+    public function __construct(array $mapping = [])
     {
         $this->mapping = $mapping;
     }

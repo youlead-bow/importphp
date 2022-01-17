@@ -2,10 +2,10 @@
 
 namespace Import\Filter;
 
-use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Import\Exception\ValidationException;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints;
-use Import\Exception\ValidationException;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
@@ -74,7 +74,7 @@ class ValidatorFilter
     public function __invoke(array $item): bool
     {
         if (!$this->strict) {
-            // Only validate properties which have an constaint.
+            // Only validate properties which have a constraint.
             $temp = array_intersect(array_keys($item), array_keys($this->constraints));
             $item = array_intersect_key($item, array_flip($temp));
         }

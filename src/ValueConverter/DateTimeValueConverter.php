@@ -2,12 +2,13 @@
 
 namespace Import\ValueConverter;
 
+use DateTime;
 use Exception;
-use \Import\Exception\UnexpectedValueException;
+use Import\Exception\UnexpectedValueException;
 
 /**
- * Convert an date string into another date string
- * Eg. You want to change the format of a string OR
+ * Convert a date string into another date string
+ * E.g. You want to change the format of a string OR
  * If no output specified, return DateTime instance
  *
  * @author David de Boer <david@ddeboer.nl>
@@ -46,21 +47,21 @@ class DateTimeValueConverter
      * the \DateTime instance     *
      * @throws UnexpectedValueException|Exception
      */
-    public function __invoke(mixed $input): \DateTime|string|null
+    public function __invoke(mixed $input): DateTime|string|null
     {
         if (!$input) {
             return null;
         }
 
         if ($this->inputFormat) {
-            $date = \DateTime::createFromFormat($this->inputFormat, $input);
+            $date = DateTime::createFromFormat($this->inputFormat, $input);
             if (false === $date) {
                 throw new UnexpectedValueException(
                     $input . ' is not a valid date/time according to format ' . $this->inputFormat
                 );
             }
         } else {
-            $date = new \DateTime($input);
+            $date = new DateTime($input);
         }
 
         if ($this->outputFormat) {

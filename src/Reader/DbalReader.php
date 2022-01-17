@@ -4,6 +4,7 @@ namespace Import\Reader;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
+use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Statement;
 
 /**
@@ -14,11 +15,12 @@ class DbalReader implements CountableReader
     private Connection $connection;
     private ?array $data;
     private ?Statement $stmt;
+    private ?Result $result;
     private string $sql;
     private array $params;
     private ?int $rowCount;
     private bool $rowCountCalculated = true;
-    private string $key;
+    private ?int $key;
 
     /**
      * @param Connection $connection
@@ -39,7 +41,7 @@ class DbalReader implements CountableReader
      */
     public function setRowCountCalculated(bool $calculate = true)
     {
-        $this->rowCountCalculated = (bool) $calculate;
+        $this->rowCountCalculated = $calculate;
     }
 
     /**
@@ -57,7 +59,7 @@ class DbalReader implements CountableReader
      */
     public function setSql(string $sql, array $params = [])
     {
-        $this->sql = (string) $sql;
+        $this->sql = $sql;
 
         $this->setSqlParameters($params);
     }
@@ -70,13 +72,15 @@ class DbalReader implements CountableReader
         $this->params = $params;
 
         $this->stmt = null;
+        $this->result = null;
         $this->rowCount = null;
     }
 
     /**
      * {@inheritdoc}
+     * @throws Exception
      */
-    public function current()
+    public function current(): array|null
     {
         if (is_null($this->data)) {
             $this->rewind();
@@ -87,23 +91,25 @@ class DbalReader implements CountableReader
 
     /**
      * {@inheritdoc}
+     * @throws Exception
      */
     public function next()
     {
         $this->key++;
-        $this->data = $this->stmt->fetch(\PDO::FETCH_ASSOC);
+        $this->data = $this->result->fetchAssociative();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function key()
+    public function key(): int
     {
         return $this->key;
     }
 
     /**
      * {@inheritdoc}
+     * @throws Exception
      */
     public function valid(): bool
     {
@@ -116,6 +122,7 @@ class DbalReader implements CountableReader
 
     /**
      * {@inheritdoc}
+     * @throws Exception
      */
     public function rewind()
     {
@@ -123,16 +130,17 @@ class DbalReader implements CountableReader
             $this->stmt = $this->prepare($this->sql, $this->params);
         }
         if (0 !== $this->key) {
-            $this->stmt->execute();
-            $this->data = $this->stmt->fetch(\PDO::FETCH_ASSOC);
+            $this->result = $this->stmt->executeQuery();
+            $this->data = $this->result->fetchAssociative();
             $this->key = 0;
         }
     }
 
     /**
      * {@inheritdoc}
+     * @throws Exception
      */
-    public function count()
+    public function count(): ?int
     {
         if (null === $this->rowCount) {
             if ($this->rowCountCalculated) {
@@ -141,19 +149,22 @@ class DbalReader implements CountableReader
                 if (null === $this->stmt) {
                     $this->rewind();
                 }
-                $this->rowCount = $this->stmt->rowCount();
+                $this->rowCount = $this->result->rowCount();
             }
         }
 
         return $this->rowCount;
     }
 
+    /**
+     * @throws Exception
+     */
     private function doCalcRowCount()
     {
         $statement = $this->prepare(sprintf('SELECT COUNT(*) FROM (%s) AS port_cnt', $this->sql), $this->params);
-        $statement->execute();
+        $result = $statement->executeQuery();
 
-        $this->rowCount = (int) $statement->fetchColumn(0);
+        $this->rowCount = (int) $result->fetchFirstColumn();
     }
 
     /**

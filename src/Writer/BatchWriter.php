@@ -3,6 +3,7 @@
 namespace Import\Writer;
 
 use Import\Writer;
+use SplDoublyLinkedList;
 use SplQueue;
 
 /**
@@ -32,7 +33,7 @@ class BatchWriter implements Writer
         $this->delegate->prepare();
 
         $this->queue = new SplQueue();
-        $this->queue->setIteratorMode(\SplDoublyLinkedList::IT_MODE_DELETE);
+        $this->queue->setIteratorMode(SplDoublyLinkedList::IT_MODE_DELETE);
     }
 
     /**
