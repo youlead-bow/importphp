@@ -21,6 +21,7 @@ class ValidationException extends \Exception implements Exception
      */
     public function __construct(ConstraintViolationListInterface $list, int $line)
     {
+        parent::__construct();
         $this->violations = $list;
         $this->lineNumber = $line;
 
