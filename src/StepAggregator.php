@@ -2,7 +2,7 @@
 
 namespace Import;
 
-use Import\Steps\Step\PriorityStep;
+use Import\Step\PriorityStep;
 use JetBrains\PhpStorm\Pure;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
