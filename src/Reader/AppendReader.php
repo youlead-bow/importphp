@@ -41,9 +41,6 @@ final class AppendReader extends \AppendIterator implements Reader
         $this->addReader($iterator);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getFields(): array
     {
         return [];
