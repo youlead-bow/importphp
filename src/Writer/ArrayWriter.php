@@ -16,7 +16,7 @@ class ArrayWriter implements Writer
     /**
      * @var array
      */
-    protected $data;
+    protected array $data;
 
     /**
      * @param array $data

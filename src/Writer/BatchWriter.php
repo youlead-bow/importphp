@@ -3,32 +3,22 @@
 namespace Import\Writer;
 
 use Import\Writer;
+use SplQueue;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
  */
 class BatchWriter implements Writer
 {
-    /**
-     * @var Writer
-     */
-    private $delegate;
-
-    /**
-     * @var integer
-     */
-    private $size;
-
-    /**
-     * @var \SplQueue
-     */
-    private $queue;
+    private Writer $delegate;
+    private int $size;
+    private SplQueue $queue;
 
     /**
      * @param Writer  $delegate
      * @param integer $size
      */
-    public function __construct(Writer $delegate, $size = 20)
+    public function __construct(Writer $delegate, int $size = 20)
     {
         $this->delegate = $delegate;
         $this->size = $size;
@@ -41,7 +31,7 @@ class BatchWriter implements Writer
     {
         $this->delegate->prepare();
 
-        $this->queue = new \SplQueue();
+        $this->queue = new SplQueue();
         $this->queue->setIteratorMode(\SplDoublyLinkedList::IT_MODE_DELETE);
     }
 

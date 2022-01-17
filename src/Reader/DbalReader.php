@@ -3,6 +3,7 @@
 namespace Import\Reader;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Statement;
 
 /**
@@ -10,52 +11,21 @@ use Doctrine\DBAL\Statement;
  */
 class DbalReader implements CountableReader
 {
-    /**
-     * @var Connection
-     */
-    private $connection;
-
-    /**
-     * @var array
-     */
-    private $data;
-
-    /**
-     * @var Statement
-     */
-    private $stmt;
-
-    /**
-     * @var string
-     */
-    private $sql;
-
-    /**
-     * @var array
-     */
-    private $params;
-
-    /**
-     * @var integer
-     */
-    private $rowCount;
-
-    /**
-     * @var boolean
-     */
-    private $rowCountCalculated = true;
-
-    /**
-     * @var string
-     */
-    private $key;
+    private Connection $connection;
+    private ?array $data;
+    private ?Statement $stmt;
+    private string $sql;
+    private array $params;
+    private ?int $rowCount;
+    private bool $rowCountCalculated = true;
+    private string $key;
 
     /**
      * @param Connection $connection
-     * @param string     $sql
+     * @param string $sql
      * @param array      $params
      */
-    public function __construct(Connection $connection, $sql, array $params = [])
+    public function __construct(Connection $connection, string $sql, array $params = [])
     {
         $this->connection = $connection;
 
@@ -67,7 +37,7 @@ class DbalReader implements CountableReader
      *
      * @param boolean $calculate
      */
-    public function setRowCountCalculated($calculate = true)
+    public function setRowCountCalculated(bool $calculate = true)
     {
         $this->rowCountCalculated = (bool) $calculate;
     }
@@ -77,18 +47,15 @@ class DbalReader implements CountableReader
      *
      * @return boolean
      */
-    public function isRowCountCalculated()
+    public function isRowCountCalculated(): bool
     {
         return $this->rowCountCalculated;
     }
 
     /**
      * Set Query string with Parameters
-     *
-     * @param string $sql
-     * @param array  $params
      */
-    public function setSql($sql, array $params = [])
+    public function setSql(string $sql, array $params = [])
     {
         $this->sql = (string) $sql;
 
@@ -97,8 +64,6 @@ class DbalReader implements CountableReader
 
     /**
      * Set SQL parameters
-     *
-     * @param array $params
      */
     public function setSqlParameters(array $params)
     {
@@ -113,7 +78,7 @@ class DbalReader implements CountableReader
      */
     public function current()
     {
-        if (null === $this->data) {
+        if (is_null($this->data)) {
             $this->rewind();
         }
 
@@ -140,7 +105,7 @@ class DbalReader implements CountableReader
     /**
      * {@inheritdoc}
      */
-    public function valid()
+    public function valid(): bool
     {
         if (null === $this->data) {
             $this->rewind();
@@ -193,13 +158,9 @@ class DbalReader implements CountableReader
 
     /**
      * Prepare given statement
-     *
-     * @param string $sql
-     * @param array  $params
-     *
-     * @return Statement
+     * @throws Exception
      */
-    private function prepare($sql, array $params)
+    private function prepare(string $sql, array $params): Statement
     {
         $statement = $this->connection->prepare($sql);
         foreach ($params as $key => $value) {

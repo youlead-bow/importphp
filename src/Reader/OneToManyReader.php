@@ -13,46 +13,29 @@ use Import\Exception\ReaderException;
  */
 class OneToManyReader implements CountableReader
 {
-    /**
-     * @var Reader
-     */
-    protected $leftReader;
-
-    /**
-     * @var Reader
-     */
-    protected $rightReader;
-
-    /**
-     * @var string
-     */
-    protected $leftJoinField;
-
-    /**
-     * @var string
-     */
-    protected $rightJoinField;
+    protected Reader $leftReader;
+    protected Reader $rightReader;
+    protected string $leftJoinField;
+    protected ?string $rightJoinField;
 
     /**
      * Key to nest the rightRows under
-     *
-     * @var string
      */
-    protected $nestKey;
+    protected string $nestKey;
 
     /**
      * @param Reader $leftReader
      * @param Reader $rightReader
      * @param string $nestKey
      * @param string $leftJoinField
-     * @param string $rightJoinField
+     * @param string|null $rightJoinField
      */
     public function __construct(
         Reader $leftReader,
         Reader $rightReader,
-        $nestKey,
-        $leftJoinField,
-        $rightJoinField = null
+        string $nestKey,
+        string $leftJoinField,
+        string $rightJoinField = null
     ) {
         if (is_null($rightJoinField)) {
             $rightJoinField = $leftJoinField;
@@ -70,11 +53,9 @@ class OneToManyReader implements CountableReader
      * with the data returned from the right reader
      * Where the ID fields Match
      *
-     * @return array
-     *
      * @throws ReaderException
      */
-    public function current()
+    public function current(): array
     {
         $leftRow = $this->leftReader->current();
 
@@ -109,14 +90,9 @@ class OneToManyReader implements CountableReader
     }
 
     /**
-     * @param array  $row
-     * @param string $idField
-     *
-     * @return mixed
-     *
      * @throws ReaderException
      */
-    protected function getRowId(array $row, $idField)
+    protected function getRowId(array $row, string $idField): mixed
     {
         if (!array_key_exists($idField, $row)) {
             throw new ReaderException(
@@ -151,7 +127,7 @@ class OneToManyReader implements CountableReader
     /**
      * {@inheritdoc}
      */
-    public function valid()
+    public function valid(): bool
     {
         return $this->leftReader->valid() && $this->rightReader->valid();
     }
@@ -168,7 +144,7 @@ class OneToManyReader implements CountableReader
     /**
      * {@inheritdoc}
      */
-    public function count()
+    public function count(): int
     {
         return $this->leftReader->count();
     }

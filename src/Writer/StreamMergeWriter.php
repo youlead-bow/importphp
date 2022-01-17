@@ -9,15 +9,12 @@ namespace Import\Writer;
  */
 class StreamMergeWriter extends AbstractStreamWriter
 {
-    /**
-     * @var string
-     */
-    private $discriminantField = 'discr';
+    private string $discriminantField = 'discr';
 
     /**
      * @var AbstractStreamWriter[]
      */
-    private $writers = [];
+    private array $writers = [];
 
     /**
      * Set discriminant field
@@ -26,7 +23,7 @@ class StreamMergeWriter extends AbstractStreamWriter
      *
      * @return $this
      */
-    public function setDiscriminantField($discriminantField)
+    public function setDiscriminantField(string $discriminantField): static
     {
         $this->discriminantField = (string) $discriminantField;
 
@@ -38,7 +35,7 @@ class StreamMergeWriter extends AbstractStreamWriter
      *
      * @return string
      */
-    public function getDiscriminantField()
+    public function getDiscriminantField(): string
     {
         return $this->discriminantField;
     }
@@ -65,7 +62,7 @@ class StreamMergeWriter extends AbstractStreamWriter
      *
      * @return $this
      */
-    public function setStreamWriters(array $writers)
+    public function setStreamWriters(array $writers): static
     {
         foreach ($writers as $key => $writer) {
             $this->setStreamWriter($key, $writer);
@@ -75,12 +72,12 @@ class StreamMergeWriter extends AbstractStreamWriter
     }
 
     /**
-     * @param string               $key
+     * @param string $key
      * @param AbstractStreamWriter $writer
      *
      * @return $this
      */
-    public function setStreamWriter($key, AbstractStreamWriter $writer)
+    public function setStreamWriter(string $key, AbstractStreamWriter $writer): static
     {
         $writer->setStream($this->getStream());
         $writer->setCloseStreamOnFinish(false);
@@ -91,12 +88,8 @@ class StreamMergeWriter extends AbstractStreamWriter
 
     /**
      * Get a previously registered Writer
-     *
-     * @param string $key
-     *
-     * @return AbstractStreamWriter
      */
-    public function getStreamWriter($key)
+    public function getStreamWriter(string $key): AbstractStreamWriter
     {
         return $this->writers[$key];
     }
@@ -106,19 +99,15 @@ class StreamMergeWriter extends AbstractStreamWriter
      *
      * @return AbstractStreamWriter[]
      */
-    public function getStreamWriters()
+    public function getStreamWriters(): array
     {
         return $this->writers;
     }
 
     /**
      * Is a writer registered for key?
-     *
-     * @param string $key
-     *
-     * @return boolean
      */
-    public function hasStreamWriter($key)
+    public function hasStreamWriter(string $key): bool
     {
         return isset($this->writers[$key]);
     }
@@ -128,7 +117,7 @@ class StreamMergeWriter extends AbstractStreamWriter
      *
      * @param resource $stream
      */
-    public function setStream($stream)
+    public function setStream(mixed $stream): static
     {
         parent::setStream($stream);
         foreach ($this->getStreamWriters() as $writer) {
