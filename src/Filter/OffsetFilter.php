@@ -10,30 +10,15 @@ namespace Import\Filter;
  */
 class OffsetFilter
 {
-    /**
-     * @var integer
-     */
-    protected $offset = 0;
+    protected int $offset = 0;
 
-    /**
-     * @var integer|null
-     */
-    protected $limit = null;
+    protected ?int $limit = null;
 
-    /**
-     * @var integer
-     */
-    protected $offsetCount = 0;
+    protected int $offsetCount = 0;
 
-    /**
-     * @var integer
-     */
-    protected $sliceCount = 0;
+    protected int $sliceCount = 0;
 
-    /**
-     * @var boolean
-     */
-    protected $maxLimitHit = false;
+    protected bool $maxLimitHit = false;
 
     /**
      * @param integer      $offset 0-based index of the item to start read from
@@ -48,7 +33,7 @@ class OffsetFilter
     /**
      * {@inheritdoc}
      */
-    public function __invoke(array $item)
+    public function __invoke(array $item): bool
     {
         // In case we've already filtered up to limited
         if ($this->maxLimitHit) {

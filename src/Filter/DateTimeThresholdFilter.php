@@ -15,29 +15,20 @@ class DateTimeThresholdFilter
 {
     /**
      * Threshold dates strictly before this date will be filtered out
-     *
-     * @var \DateTime|null
      */
-    protected $threshold;
+    protected ?\DateTime $threshold;
 
     /**
      * Used to convert the values in the time column
-     *
-     * @var DateTimeValueConverter
      */
-    protected $valueConverter;
+    protected DateTimeValueConverter $valueConverter;
 
     /**
      * The name of the column that should contain the value the filter will compare the threshold with
-     *
-     * @var string
      */
-    protected $timeColumnName = 'updated_at';
+    protected string $timeColumnName = 'updated_at';
 
-    /**
-     * @var integer
-     */
-    protected $priority = 512;
+    protected int $priority = 512;
 
     /**
      * @param DateTimeValueConverter $valueConverter
@@ -60,7 +51,7 @@ class DateTimeThresholdFilter
     /**
      * {@inheritdoc}
      */
-    public function __invoke(array $item)
+    public function __invoke(array $item): bool
     {
         if ($this->threshold == null) {
             throw new \LogicException('Make sure you set a threshold');

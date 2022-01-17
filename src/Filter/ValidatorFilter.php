@@ -12,35 +12,17 @@ use Import\Exception\ValidationException;
  */
 class ValidatorFilter
 {
-    /**
-     * @var ValidatorInterface
-     */
-    private $validator;
+    private ValidatorInterface $validator;
 
-    /**
-     * @var boolean
-     */
-    private $throwExceptions = false;
+    private bool $throwExceptions = false;
 
-    /**
-     * @var integer
-     */
-    private $line = 1;
+    private int $line = 1;
 
-    /**
-     * @var boolean
-     */
-    private $strict = true;
+    private bool $strict = true;
 
-    /**
-     * @var array
-     */
-    private $constraints = [];
+    private array $constraints = [];
 
-    /**
-     * @var array
-     */
-    private $violations = [];
+    private array $violations = [];
 
     /**
      * @param ValidatorInterface $validator
@@ -51,10 +33,10 @@ class ValidatorFilter
     }
 
     /**
-     * @param string     $field
+     * @param string $field
      * @param Constraint $constraint
      */
-    public function add($field, Constraint $constraint)
+    public function add(string $field, Constraint $constraint)
     {
         if (!isset($this->constraints[$field])) {
             $this->constraints[$field] = [];
@@ -66,7 +48,7 @@ class ValidatorFilter
     /**
      * @param boolean $flag
      */
-    public function throwExceptions($flag = true)
+    public function throwExceptions(bool $flag = true)
     {
         $this->throwExceptions = $flag;
     }
@@ -74,15 +56,12 @@ class ValidatorFilter
     /**
      * @param boolean $strict
      */
-    public function setStrict($strict)
+    public function setStrict(bool $strict)
     {
         $this->strict = $strict;
     }
 
-    /**
-     * @return array
-     */
-    public function getViolations()
+    public function getViolations(): array
     {
         return $this->violations;
     }
@@ -90,10 +69,9 @@ class ValidatorFilter
     /**
      * @param array $item
      * @return bool
-     *
      * @throws ValidationException
      */
-    public function __invoke(array $item)
+    public function __invoke(array $item): bool
     {
         if (!$this->strict) {
             // Only validate properties which have an constaint.

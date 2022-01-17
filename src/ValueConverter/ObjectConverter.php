@@ -12,10 +12,7 @@ use Symfony\Component\PropertyAccess\PropertyAccessor;
  */
 class ObjectConverter
 {
-    /**
-     * @var string|null
-     */
-    protected $propertyPath;
+    protected ?string $propertyPath;
 
     /**
      * @var PropertyAccessor

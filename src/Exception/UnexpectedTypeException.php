@@ -2,6 +2,8 @@
 
 namespace Import\Exception;
 
+use JetBrains\PhpStorm\Pure;
+
 /**
  * @author David de Boer <david@ddeboer.nl>
  */
@@ -11,6 +13,7 @@ class UnexpectedTypeException extends UnexpectedValueException
      * @param mixed  $value
      * @param string $expectedType
      */
+    #[Pure]
     public function __construct($value, $expectedType)
     {
         parent::__construct(sprintf(

@@ -11,21 +11,15 @@ use Import\Exception\UnexpectedTypeException;
  */
 class CharsetValueConverter
 {
-    /**
-     * @var string
-     */
-    private $charset;
+    private string $charset;
 
-    /**
-     * @var string
-     */
-    private $inCharset;
+    private string $inCharset;
 
     /**
      * @param string $charset   Charset to convert values to
      * @param string $inCharset Charset of input values
      */
-    public function __construct($charset, $inCharset = 'UTF-8')
+    public function __construct(string $charset, string $inCharset = 'UTF-8')
     {
         $this->charset = $charset;
         $this->inCharset = $inCharset;
@@ -34,7 +28,7 @@ class CharsetValueConverter
     /**
      * {@inheritdoc}
      */
-    public function __invoke($input)
+    public function __invoke($input): array|bool|string|null
     {
         if (function_exists('mb_convert_encoding')) {
             return mb_convert_encoding($input, $this->charset, $this->inCharset);

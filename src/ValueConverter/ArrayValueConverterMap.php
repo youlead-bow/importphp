@@ -9,10 +9,7 @@ namespace Import\ValueConverter;
  */
 class ArrayValueConverterMap
 {
-    /**
-     * @var array
-     */
-    private $converters;
+    private array $converters;
 
     /**
      * @param callable[] $converters
@@ -25,7 +22,7 @@ class ArrayValueConverterMap
     /**
      * {@inheritdoc}
      */
-    public function __invoke($input)
+    public function __invoke($input): array
     {
         if (!is_array($input)) {
             throw new \InvalidArgumentException('Input of a ArrayValueConverterMap must be an array');
@@ -39,13 +36,11 @@ class ArrayValueConverterMap
     }
 
     /**
-     * Convert an item of the array using the converter-map
-     *
+     * Convert an item of the array using the converter-map     *
      * @param $item
-     *
      * @return mixed
      */
-    protected function convertItem($item)
+    protected function convertItem($item): mixed
     {
         foreach ($item as $key => $value) {
             if (!isset($this->converters[$key])) {

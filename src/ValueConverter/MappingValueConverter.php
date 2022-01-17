@@ -9,10 +9,7 @@ use Import\Exception\UnexpectedValueException;
  */
 class MappingValueConverter
 {
-    /**
-     * @var array
-     */
-    private $mapping = [];
+    private array $mapping = [];
 
     /**
      * @param array $mapping

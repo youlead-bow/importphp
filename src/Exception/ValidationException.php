@@ -11,15 +11,9 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
  */
 class ValidationException extends \Exception implements Exception
 {
-    /**
-     * @var ConstraintViolationListInterface
-     */
-    private $violations;
+    private ConstraintViolationListInterface $violations;
 
-    /**
-     * @var integer
-     */
-    private $lineNumber;
+    private int $lineNumber;
 
     /**
      * @param ConstraintViolationListInterface $list
@@ -33,18 +27,12 @@ class ValidationException extends \Exception implements Exception
         $this->message = $this->createMessage($list, $line);
     }
 
-    /**
-     * @return ConstraintViolationListInterface
-     */
-    public function getViolations()
+    public function getViolations(): ConstraintViolationListInterface
     {
         return $this->violations;
     }
 
-    /**
-     * @return integer
-     */
-    public function getLineNumber()
+    public function getLineNumber(): integer
     {
         return $this->lineNumber;
     }
@@ -52,10 +40,8 @@ class ValidationException extends \Exception implements Exception
     /**
      * @param ConstraintViolationListInterface|ConstraintViolationInterface[] $list
      * @param integer $line
-     *
-     * @return string
      */
-    private function createMessage(ConstraintViolationListInterface $list, $line)
+    private function createMessage(ConstraintViolationListInterface $list, $line): string
     {
         $messages = [];
         foreach ($list as $violation) {

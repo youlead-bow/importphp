@@ -12,15 +12,14 @@ class DateTimeToStringValueConverter
     /**
      * Date time format
      *
-     * @var string
      * @see http://php.net/manual/en/datetime.createfromformat.php
      */
-    protected $outputFormat;
+    protected string $outputFormat;
 
     /**
      * @param string $outputFormat
      */
-    public function __construct($outputFormat = 'Y-m-d H:i:s')
+    public function __construct(string $outputFormat = 'Y-m-d H:i:s')
     {
         $this->outputFormat = $outputFormat;
     }
@@ -33,10 +32,10 @@ class DateTimeToStringValueConverter
      * @return \DateTime|string
      * @throws UnexpectedValueException
      */
-    public function __invoke($input)
+    public function __invoke(mixed $input): \DateTime|string
     {
         if (!$input) {
-            return;
+            return "";
         }
 
         if (!($input instanceof \DateTime)) {

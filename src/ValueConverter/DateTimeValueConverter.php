@@ -16,26 +16,22 @@ class DateTimeValueConverter
     /**
      * Date time format
      *
-     * @var string
-     *
      * @see http://php.net/manual/en/datetime.createfromformat.php
      */
-    protected $inputFormat;
+    protected ?string $inputFormat;
 
     /**
      * Date time format
      *
-     * @var string
-     *
      * @see http://php.net/manual/en/datetime.createfromformat.php
      */
-    protected $outputFormat;
+    protected ?string $outputFormat;
 
     /**
-     * @param string $inputFormat
-     * @param string $outputFormat
+     * @param string|null $inputFormat
+     * @param string|null $outputFormat
      */
-    public function __construct($inputFormat = null, $outputFormat = null)
+    public function __construct(string $inputFormat = null, string $outputFormat = null)
     {
         $this->inputFormat  = $inputFormat;
         $this->outputFormat = $outputFormat;
@@ -52,10 +48,10 @@ class DateTimeValueConverter
      * @return \DateTime|string
      * @throws UnexpectedValueException
      */
-    public function __invoke($input)
+    public function __invoke(mixed $input): \DateTime|string
     {
         if (!$input) {
-            return;
+            return "";
         }
 
         if ($this->inputFormat) {
