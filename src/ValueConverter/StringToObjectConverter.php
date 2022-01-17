@@ -17,9 +17,9 @@ class StringToObjectConverter
 
     /**
      * @param ObjectRepository $repository
-     * @param string           $property
+     * @param string $property
      */
-    public function __construct(ObjectRepository $repository, $property)
+    public function __construct(ObjectRepository $repository, string $property)
     {
         $this->repository = $repository;
         $this->property = $property;
