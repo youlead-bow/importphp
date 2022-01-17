@@ -18,7 +18,7 @@ class CountableIteratorReader extends IteratorReader implements CountableReader
     /**
      * {@inheritdoc}
      */
-    public function count()
+    public function count(): int
     {
         $iterator = $this->getInnerIterator();
 

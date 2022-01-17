@@ -3,6 +3,7 @@
 namespace Import\Writer;
 
 use Import\Writer;
+use InvalidArgumentException;
 
 /**
  * Base class to write into streams
@@ -13,20 +14,13 @@ abstract class AbstractStreamWriter implements Writer
 {
     use WriterTemplate;
 
-    /**
-     * @var resource
-     */
-    private $stream;
-
-    /**
-     * @var boolean
-     */
-    private $closeStreamOnFinish = true;
+    private mixed $stream;
+    private bool $closeStreamOnFinish = true;
 
     /**
      * @param resource $stream
      */
-    public function __construct($stream = null)
+    public function __construct(mixed $stream = null)
     {
         if (null !== $stream) {
             $this->setStream($stream);
@@ -35,17 +29,12 @@ abstract class AbstractStreamWriter implements Writer
 
     /**
      * Set the stream resource
-     *
-     * @param resource $stream
-     *
-     * @throws \InvalidArgumentException
-     *
-     * @return $this
+     * @throws InvalidArgumentException
      */
-    public function setStream($stream)
+    public function setStream($stream): static
     {
         if (! is_resource($stream) || ! 'stream' == get_resource_type($stream)) {
-            throw new \InvalidArgumentException(sprintf(
+            throw new InvalidArgumentException(sprintf(
                 'Expects argument to be a stream resource, got %s',
                 is_resource($stream) ? get_resource_type($stream) : gettype($stream)
             ));
@@ -81,12 +70,8 @@ abstract class AbstractStreamWriter implements Writer
 
     /**
      * Should underlying stream be closed on finish?
-     *
-     * @param boolean $closeStreamOnFinish
-     *
-     * @return $this
      */
-    public function setCloseStreamOnFinish($closeStreamOnFinish = true)
+    public function setCloseStreamOnFinish(bool $closeStreamOnFinish = true): static
     {
         $this->closeStreamOnFinish = (bool) $closeStreamOnFinish;
 
@@ -95,10 +80,8 @@ abstract class AbstractStreamWriter implements Writer
 
     /**
      * Is Stream closed on finish?
-     *
-     * @return boolean
      */
-    public function getCloseStreamOnFinish()
+    public function getCloseStreamOnFinish(): bool
     {
         return $this->closeStreamOnFinish;
     }
