@@ -11,15 +11,9 @@ use Doctrine\Common\Persistence\ObjectRepository;
  */
 class StringToObjectConverter
 {
-    /**
-     * @var ObjectRepository
-     */
-    private $repository;
+    private ObjectRepository $repository;
 
-    /**
-     * @var string
-     */
-    private $property;
+    private string $property;
 
     /**
      * @param ObjectRepository $repository

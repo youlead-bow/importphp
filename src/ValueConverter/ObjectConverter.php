@@ -14,15 +14,12 @@ class ObjectConverter
 {
     protected ?string $propertyPath;
 
-    /**
-     * @var PropertyAccessor
-     */
-    protected $propertyAccessor;
+    protected PropertyAccessor $propertyAccessor;
 
     /**
      * @param string|null $propertyPath
      */
-    public function __construct($propertyPath = null)
+    public function __construct(string $propertyPath = null)
     {
         $this->propertyPath = $propertyPath;
         $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
@@ -33,7 +30,7 @@ class ObjectConverter
      *
      * @param string $propertyPath
      */
-    public function setPropertyPath($propertyPath)
+    public function setPropertyPath(string $propertyPath)
     {
         $this->propertyPath = $propertyPath;
     }
@@ -43,7 +40,7 @@ class ObjectConverter
      *
      * @return null|string
      */
-    public function getPropertyPath()
+    public function getPropertyPath(): ?string
     {
         return $this->propertyPath;
     }
