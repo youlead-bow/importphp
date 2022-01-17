@@ -14,15 +14,9 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
  */
 class MappingStep implements Step
 {
-    /**
-     * @var array
-     */
-    private $mappings = [];
+    private array $mappings = [];
 
-    /**
-     * @var PropertyAccessorInterface
-     */
-    private $accessor;
+    private PropertyAccessor|PropertyAccessorInterface $accessor;
 
     /**
      * @param array                     $mappings
@@ -40,7 +34,7 @@ class MappingStep implements Step
      *
      * @return $this
      */
-    public function map($from, $to)
+    public function map(string $from, string $to): static
     {
         $this->mappings[$from] = $to;
 
@@ -52,7 +46,7 @@ class MappingStep implements Step
      *
      * @throws MappingException
      */
-    public function process($item, callable $next)
+    public function process($item, callable $next): callable|bool
     {
         try {
             foreach ($this->mappings as $from => $to) {
@@ -68,9 +62,7 @@ class MappingStep implements Step
                     unset($item[$from]);
                 }
             }
-        } catch (NoSuchPropertyException $exception) {
-            throw new MappingException('Unable to map item', null, $exception);
-        } catch (UnexpectedTypeException $exception) {
+        } catch (NoSuchPropertyException|UnexpectedTypeException $exception) {
             throw new MappingException('Unable to map item', null, $exception);
         }
 

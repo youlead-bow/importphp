@@ -10,10 +10,7 @@ use Import\Writer;
  */
 class WriterStep implements Step
 {
-    /**
-     * @var Writer
-     */
-    private $writer;
+    private Writer $writer;
 
     /**
      * @param Writer $writer
@@ -26,7 +23,7 @@ class WriterStep implements Step
     /**
      * {@inheritdoc}
      */
-    public function process($item, callable $next)
+    public function process($item, callable $next): callable|bool
     {
         $this->writer->writeItem($item);
 

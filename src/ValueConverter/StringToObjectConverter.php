@@ -2,7 +2,7 @@
 
 namespace Import\ValueConverter;
 
-use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\Persistence\ObjectRepository;
 
 /**
  * Converts a string to an object
@@ -11,21 +11,15 @@ use Doctrine\Common\Persistence\ObjectRepository;
  */
 class StringToObjectConverter
 {
-    /**
-     * @var ObjectRepository
-     */
-    private $repository;
+    private ObjectRepository $repository;
 
-    /**
-     * @var string
-     */
-    private $property;
+    private string $property;
 
     /**
      * @param ObjectRepository $repository
-     * @param string           $property
+     * @param string $property
      */
-    public function __construct(ObjectRepository $repository, $property)
+    public function __construct(ObjectRepository $repository, string $property)
     {
         $this->repository = $repository;
         $this->property = $property;

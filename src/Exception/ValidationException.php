@@ -17,9 +17,9 @@ class ValidationException extends \Exception implements Exception
 
     /**
      * @param ConstraintViolationListInterface $list
-     * @param integer                          $line
+     * @param integer $line
      */
-    public function __construct(ConstraintViolationListInterface $list, $line)
+    public function __construct(ConstraintViolationListInterface $list, int $line)
     {
         $this->violations = $list;
         $this->lineNumber = $line;
@@ -32,16 +32,17 @@ class ValidationException extends \Exception implements Exception
         return $this->violations;
     }
 
-    public function getLineNumber(): integer
+    public function getLineNumber(): int
     {
         return $this->lineNumber;
     }
 
     /**
-     * @param ConstraintViolationListInterface|ConstraintViolationInterface[] $list
+     * @param ConstraintViolationListInterface $list
      * @param integer $line
+     * @return string
      */
-    private function createMessage(ConstraintViolationListInterface $list, $line): string
+    private function createMessage(ConstraintViolationListInterface $list, int $line): string
     {
         $messages = [];
         foreach ($list as $violation) {

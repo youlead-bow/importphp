@@ -12,30 +12,15 @@ use Import\Exception\ValidationException;
  */
 class ValidatorStep implements PriorityStep
 {
-    /**
-     * @var array
-     */
-    private $constraints = [];
+    private array $constraints = [];
 
-    /**
-     * @var array
-     */
-    private $violations = [];
+    private array $violations = [];
 
-    /**
-     * @var boolean
-     */
-    private $throwExceptions = false;
+    private bool $throwExceptions = false;
 
-    /**
-     * @var integer
-     */
-    private $line = 0;
+    private int $line = 0;
 
-    /**
-     * @var ValidatorInterface
-     */
-    private $validator;
+    private ValidatorInterface $validator;
 
     /**
      * @param ValidatorInterface $validator
@@ -46,12 +31,12 @@ class ValidatorStep implements PriorityStep
     }
 
     /**
-     * @param string     $field
+     * @param string $field
      * @param Constraint $constraint
      *
      * @return $this
      */
-    public function add($field, Constraint $constraint)
+    public function add(string $field, Constraint $constraint): static
     {
         if (!isset($this->constraints['fields'][$field])) {
             $this->constraints['fields'][$field] = [];
@@ -65,15 +50,12 @@ class ValidatorStep implements PriorityStep
     /**
      * @param boolean $flag
      */
-    public function throwExceptions($flag = true)
+    public function throwExceptions(bool $flag = true)
     {
         $this->throwExceptions = $flag;
     }
 
-    /**
-     * @return array
-     */
-    public function getViolations()
+    public function getViolations(): array
     {
         return $this->violations;
     }
@@ -86,7 +68,7 @@ class ValidatorStep implements PriorityStep
      *
      * @return $this
      */
-    public function addOption($option, $optionValue)
+    public function addOption(string $option, mixed $optionValue): static
     {
         $this->constraints[$option] = $optionValue;
 
@@ -95,6 +77,7 @@ class ValidatorStep implements PriorityStep
 
     /**
      * {@inheritdoc}
+     * @throws ValidationException
      */
     public function process($item, callable $next)
     {
@@ -123,7 +106,7 @@ class ValidatorStep implements PriorityStep
     /**
      * {@inheritdoc}
      */
-    public function getPriority()
+    public function getPriority(): int
     {
         return 128;
     }

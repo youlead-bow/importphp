@@ -9,10 +9,7 @@ use Import\Step;
  */
 class ConverterStep implements Step
 {
-    /**
-     * @var callable[]
-     */
-    private $converters;
+    private array $converters;
 
     /**
      * @param array $converters
@@ -26,10 +23,9 @@ class ConverterStep implements Step
 
     /**
      * @param callable $converter
-     *
-     * @return $this
+     * @return ConverterStep
      */
-    public function add(callable $converter)
+    public function add(callable $converter): static
     {
         $this->converters[] = $converter;
 
@@ -39,7 +35,7 @@ class ConverterStep implements Step
     /**
      * {@inheritdoc}
      */
-    public function process($item, callable $next)
+    public function process($item, callable $next): callable|bool
     {
         foreach ($this->converters as $converter) {
             $item = call_user_func($converter, $item);

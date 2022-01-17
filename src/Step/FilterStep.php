@@ -9,10 +9,7 @@ use Import\Step;
  */
 class FilterStep implements Step
 {
-    /**
-     * @var \SplPriorityQueue
-     */
-    private $filters;
+    private \SplPriorityQueue $filters;
 
     public function __construct()
     {
@@ -21,11 +18,10 @@ class FilterStep implements Step
 
     /**
      * @param callable $filter
-     * @param integer  $priority
-     *
-     * @return $this
+     * @param null $priority
+     * @return FilterStep
      */
-    public function add(callable $filter, $priority = null)
+    public function add(callable $filter, $priority = null): static
     {
         $this->filters->insert($filter, $priority);
 
@@ -35,7 +31,7 @@ class FilterStep implements Step
     /**
      * {@inheritdoc}
      */
-    public function process($item, callable $next)
+    public function process($item, callable $next): callable|bool
     {
         foreach (clone $this->filters as $filter) {
             if (false === call_user_func($filter, $item)) {
