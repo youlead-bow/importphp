@@ -9,8 +9,8 @@
         "psr/log": "~2.0",
 		"seld/signal-handler": "^1.0",
         "symfony/property-access": "^5.0|^6.0",
-        "symfony/validator": "^5.0|^6.0"
-		"doctrine/common": "^3.2"
+        "symfony/validator": "^5.0|^6.0",
+		"doctrine/common": "^3.2",
 		"doctrine/dbal": "^3.2"
     },
     "autoload": {
@@ -23,7 +23,11 @@
         "ext-mbstring": "*",
 		"ext-sqlite3": "*",
         "doctrine/instantiator": "^1.4",
-        "doctrine/common": "^3.2"
 		"doctrine/orm": "^2.11"
+    },
+    "config": {
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true
+        }
     }
 }
