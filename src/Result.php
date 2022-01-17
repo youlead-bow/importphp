@@ -11,54 +11,31 @@ class Result
 {
     /**
      * Identifier given to the import/export
-     *
-     * @var string
      */
-    protected $name;
+    protected string $name;
+
+    protected \DateTime $startTime;
+
+    protected \DateTime $endTime;
+
+    protected \DateInterval $elapsed;
+
+    protected int $errorCount = 0;
+
+    protected int $successCount = 0;
+
+    protected int $totalProcessedCount = 0;
+
+    protected \SplObjectStorage $exceptions;
 
     /**
-     * @var \DateTime
-     */
-    protected $startTime;
-
-    /**
-     * @var \DateTime
-     */
-    protected $endTime;
-
-    /**
-     * @var \DateInterval
-     */
-    protected $elapsed;
-
-    /**
-     * @var integer
-     */
-    protected $errorCount = 0;
-
-    /**
-     * @var integer
-     */
-    protected $successCount = 0;
-
-    /**
-     * @var integer
-     */
-    protected $totalProcessedCount = 0;
-
-    /**
-     * @var \SplObjectStorage
-     */
-    protected $exceptions;
-
-    /**
-     * @param string            $name
+     * @param string $name
      * @param \DateTime         $startTime
      * @param \DateTime         $endTime
-     * @param integer           $totalCount
+     * @param integer $totalCount
      * @param \SplObjectStorage $exceptions
      */
-    public function __construct($name, \DateTime $startTime, \DateTime $endTime, $totalCount, \SplObjectStorage $exceptions)
+    public function __construct(string $name, \DateTime $startTime, \DateTime $endTime, int $totalCount, \SplObjectStorage $exceptions)
     {
         $this->name                = $name;
         $this->startTime           = $startTime;
@@ -70,74 +47,47 @@ class Result
         $this->exceptions          = $exceptions;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @return \DateTime
-     */
-    public function getStartTime()
+    public function getStartTime(): \DateTime
     {
         return $this->startTime;
     }
 
-    /**
-     * @return \DateTime
-     */
-    public function getEndTime()
+    public function getEndTime(): \DateTime
     {
         return $this->endTime;
     }
 
-    /**
-     * @return \DateInterval
-     */
-    public function getElapsed()
+    public function getElapsed(): \DateInterval
     {
         return $this->elapsed;
     }
 
-    /**
-     * @return integer
-     */
-    public function getErrorCount()
+    public function getErrorCount(): int
     {
         return $this->errorCount;
     }
 
-    /**
-     * @return integer
-     */
-    public function getSuccessCount()
+    public function getSuccessCount(): int
     {
         return $this->successCount;
     }
 
-    /**
-     * @return integer
-     */
-    public function getTotalProcessedCount()
+    public function getTotalProcessedCount(): int
     {
         return $this->totalProcessedCount;
     }
 
-    /**
-     * @return boolean
-     */
-    public function hasErrors()
+    public function hasErrors(): bool
     {
         return $this->errorCount > 0;
     }
 
-    /**
-     * @return \SplObjectStorage
-     */
-    public function getExceptions()
+    public function getExceptions(): \SplObjectStorage
     {
         return $this->exceptions;
     }

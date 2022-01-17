@@ -23,7 +23,7 @@ class WriterStep implements Step
     /**
      * {@inheritdoc}
      */
-    public function process($item, callable $next): callable|bool
+    public function process($item, callable $next): bool
     {
         $this->writer->writeItem($item);
 
