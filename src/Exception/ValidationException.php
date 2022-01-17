@@ -42,7 +42,7 @@ class ValidationException extends \Exception implements Exception
      * @param integer $line
      * @return string
      */
-    private function createMessage(ConstraintViolationListInterface $list, $line): string
+    private function createMessage(ConstraintViolationListInterface $list, int $line): string
     {
         $messages = [];
         foreach ($list as $violation) {
