@@ -31,7 +31,7 @@ class FilterStep implements Step
     /**
      * {@inheritdoc}
      */
-    public function process($item, callable $next): callable|bool
+    public function process($item, callable $next): bool
     {
         foreach (clone $this->filters as $filter) {
             if (false === call_user_func($filter, $item)) {

@@ -12,9 +12,7 @@ interface Workflow
     /**
      * Process the whole import workflow
      *
-     * @return Result Object Containing Workflow Results
-     *
      * @throws Exception
      */
-    public function process();
+    public function process(): Result;
 }

@@ -2,7 +2,8 @@
 
 namespace Import;
 
-use Import\Steps\Step\PriorityStep;
+use Import\Step\PriorityStep;
+use JetBrains\PhpStorm\Pure;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
@@ -17,38 +18,25 @@ class StepAggregator implements Workflow, LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
-    /**
-     * @var Reader
-     */
-    private $reader;
+    private Reader $reader;
 
     /**
      * Identifier for the Import/Export
-     *
-     * @var string|null
      */
-    private $name = null;
+    private ?string $name = null;
 
-    /**
-     * @var boolean
-     */
-    private $skipItemOnFailure = false;
+    private bool $skipItemOnFailure = false;
 
-    /**
-     * @var array
-     */
-    private $steps = [];
+    private array $steps = [];
 
-    /**
-     * @var Writer[]
-     */
-    private $writers = [];
+    private array $writers = [];
 
     /**
      * @param Reader $reader
-     * @param string $name
+     * @param string|null $name
      */
-    public function __construct(Reader $reader, $name = null)
+    #[Pure]
+    public function __construct(Reader $reader, string $name = null)
     {
         $this->name = $name;
         $this->reader = $reader;
@@ -65,7 +53,7 @@ class StepAggregator implements Workflow, LoggerAwareInterface
      *
      * @return $this
      */
-    public function addStep(Step $step, $priority = null)
+    public function addStep(Step $step, int $priority = null): static
     {
         $priority = null === $priority && $step instanceof PriorityStep ? $step->getPriority() : $priority;
         $priority = null === $priority ? 0 : $priority;
@@ -82,9 +70,9 @@ class StepAggregator implements Workflow, LoggerAwareInterface
      *
      * @return $this
      */
-    public function addWriter(Writer $writer)
+    public function addWriter(Writer $writer): static
     {
-        array_push($this->writers, $writer);
+        $this->writers[] = $writer;
 
         return $this;
     }
@@ -92,7 +80,7 @@ class StepAggregator implements Workflow, LoggerAwareInterface
     /**
      * {@inheritdoc}
      */
-    public function process()
+    public function process(): Result
     {
         $count      = 0;
         $exceptions = new \SplObjectStorage();
@@ -142,27 +130,22 @@ class StepAggregator implements Workflow, LoggerAwareInterface
      *
      * @return $this
      */
-    public function setSkipItemOnFailure($skipItemOnFailure)
+    public function setSkipItemOnFailure(bool $skipItemOnFailure): static
     {
         $this->skipItemOnFailure = $skipItemOnFailure;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
     /**
      * Builds the pipeline
-     *
-     * @return callable
      */
-    private function buildPipeline()
+    private function buildPipeline(): callable|\Closure
     {
         $nextCallable = function ($item) {
             // the final callable is a no-op
@@ -179,10 +162,8 @@ class StepAggregator implements Workflow, LoggerAwareInterface
 
     /**
      * Sorts the internal list of steps and writers by priority in reverse order.
-     *
-     * @return Step[]
      */
-    private function getStepsSortedDescByPriority()
+    private function getStepsSortedDescByPriority(): array
     {
         $steps = $this->steps;
         // Use illogically large and small priorities
