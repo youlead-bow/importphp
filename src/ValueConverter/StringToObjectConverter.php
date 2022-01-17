@@ -2,7 +2,7 @@
 
 namespace Import\ValueConverter;
 
-use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\Persistence\ObjectRepository;
 
 /**
  * Converts a string to an object

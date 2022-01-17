@@ -9,8 +9,5 @@ use Import\Step;
  */
 interface PriorityStep extends Step
 {
-    /**
-     * @return integer
-     */
-    public function getPriority();
+    public function getPriority(): int;
 }
