@@ -1,6 +1,6 @@
 # flavou45/importphp
 
-Port is a data import/export workflow for PHP.
+Import PHP is a data import/export workflow for PHP.
 
 ## Installation
 
