@@ -21,7 +21,6 @@
     "require-dev": {
         "ext-iconv": "*",
         "ext-mbstring": "*",
-		"ext-sqlite3": "*",
         "doctrine/instantiator": "^1.4",
 		"doctrine/orm": "^2.11"
     },
