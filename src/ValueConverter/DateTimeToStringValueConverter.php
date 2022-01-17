@@ -27,15 +27,12 @@ class DateTimeToStringValueConverter
     /**
      * Convert string to date time object
      * using specified format
-     *
-     * @param mixed $input
-     * @return \DateTime|string
      * @throws UnexpectedValueException
      */
-    public function __invoke(mixed $input): \DateTime|string
+    public function __invoke(mixed $input): \DateTime|string|null
     {
         if (!$input) {
-            return "";
+            return null;
         }
 
         if (!($input instanceof \DateTime)) {

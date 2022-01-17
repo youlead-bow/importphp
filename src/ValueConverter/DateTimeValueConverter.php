@@ -2,6 +2,7 @@
 
 namespace Import\ValueConverter;
 
+use Exception;
 use \Import\Exception\UnexpectedValueException;
 
 /**
@@ -42,16 +43,13 @@ class DateTimeValueConverter
      * using specified format
      *
      * If no output format specified then return
-     * the \DateTime instance
-     *
-     * @param mixed $input
-     * @return \DateTime|string
-     * @throws UnexpectedValueException
+     * the \DateTime instance     *
+     * @throws UnexpectedValueException|Exception
      */
-    public function __invoke(mixed $input): \DateTime|string
+    public function __invoke(mixed $input): \DateTime|string|null
     {
         if (!$input) {
-            return "";
+            return null;
         }
 
         if ($this->inputFormat) {
