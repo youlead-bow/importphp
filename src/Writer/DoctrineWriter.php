@@ -9,6 +9,7 @@ use Doctrine\Inflector\InflectorFactory;
 use Doctrine\Inflector\Language;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Id\AssignedGenerator;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\Persistence\ObjectRepository;
 use Import\Exception\UnsupportedDatabaseTypeException;
@@ -52,6 +53,11 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
     /**
      * Whether to truncate the table first
      */
+    protected bool $disableAutoIncrement = true;
+
+    /**
+     * Whether to truncate the table first
+     */
     protected bool $truncate = true;
 
     /**
@@ -86,8 +92,10 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
         $this->objectRepository = $entityManager->getRepository($objectName);
         $this->objectMetadata = $entityManager->getClassMetadata($objectName);
 
-        //$this->objectMetadata->setIdGenerator(new \Doctrine\ORM\Id\AssignedGenerator());
-        //$this->objectMetadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
+        if($this->disableAutoIncrement) {
+            $this->objectMetadata->setIdGenerator(new AssignedGenerator());
+            $this->objectMetadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
+        }
 
         //translate objectName in case a namespace alias is used
         $this->objectName = $this->objectMetadata->getName();
@@ -138,6 +146,19 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
 
         return $this;
     }
+
+    public function getDisableAutoIncrement(): bool
+    {
+        return $this->disableAutoIncrement;
+    }
+
+    public function setDisableAutoIncrement(bool $disableAutoIncrement): static
+    {
+        $this->disableAutoIncrement = $disableAutoIncrement;
+
+        return $this;
+    }
+
 
     /**
      * Disable Doctrine logging
