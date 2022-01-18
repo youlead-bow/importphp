@@ -79,7 +79,7 @@ class ValidatorStep implements PriorityStep
      * {@inheritdoc}
      * @throws ValidationException
      */
-    public function process(mixed $item, callable $next): bool
+    public function process(mixed $item, callable $next): ?bool
     {
         $this->line++;
 

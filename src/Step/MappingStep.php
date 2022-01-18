@@ -46,7 +46,7 @@ class MappingStep implements Step
      *
      * @throws MappingException
      */
-    public function process(mixed $item, callable $next): bool
+    public function process(mixed $item, callable $next): ?bool
     {
         try {
             foreach ($this->mappings as $from => $to) {

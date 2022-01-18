@@ -16,7 +16,7 @@ class Result
     /**
      * Identifier given to the import/export
      */
-    protected string $name;
+    protected ?string $name;
 
     protected DateTime $startTime;
 
@@ -33,13 +33,13 @@ class Result
     protected SplObjectStorage $exceptions;
 
     /**
-     * @param string $name
+     * @param string|null $name
      * @param DateTime $startTime
      * @param DateTime $endTime
      * @param integer $totalCount
      * @param SplObjectStorage $exceptions
      */
-    public function __construct(string $name, DateTime $startTime, DateTime $endTime, int $totalCount, SplObjectStorage $exceptions)
+    public function __construct(?string $name, DateTime $startTime, DateTime $endTime, int $totalCount, SplObjectStorage $exceptions)
     {
         $this->name                = $name;
         $this->startTime           = $startTime;

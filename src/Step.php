@@ -13,7 +13,6 @@ interface Step
      * @param mixed    $item
      * @param callable $next
      *
-     * @return boolean False return value means the item is skipped
      */
-    public function process(mixed $item, callable $next): bool;
+    public function process(mixed $item, callable $next): ?bool;
 }

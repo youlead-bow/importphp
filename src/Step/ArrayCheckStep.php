@@ -15,7 +15,7 @@ class ArrayCheckStep implements Step
     /**
      * {@inheritdoc}
      */
-    public function process(mixed $item, callable $next): bool
+    public function process(mixed $item, callable $next): ?bool
     {
         if (!is_array($item) && !($item instanceof ArrayAccess && $item instanceof Traversable)) {
             throw new UnexpectedTypeException($item, 'array');
