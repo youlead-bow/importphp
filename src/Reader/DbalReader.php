@@ -13,14 +13,14 @@ use Doctrine\DBAL\Statement;
 class DbalReader implements CountableReader
 {
     private Connection $connection;
-    private ?array $data;
+    private array|bool|null $data;
     private ?Statement $stmt;
     private ?Result $result;
     private string $sql;
     private array $params;
     private ?int $rowCount;
     private bool $rowCountCalculated = true;
-    private ?int $key;
+    private ?int $key = null;
 
     /**
      * @param Connection $connection
@@ -164,7 +164,7 @@ class DbalReader implements CountableReader
         $statement = $this->prepare(sprintf('SELECT COUNT(*) FROM (%s) AS port_cnt', $this->sql), $this->params);
         $result = $statement->executeQuery();
 
-        $this->rowCount = (int) $result->fetchFirstColumn();
+        $this->rowCount = (int) current($result->fetchFirstColumn());
     }
 
     /**

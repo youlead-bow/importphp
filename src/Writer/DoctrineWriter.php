@@ -2,14 +2,14 @@
 
 namespace Import\Writer;
 
-use DateTime;
+use DateTimeInterface;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Logging\SQLLogger;
 use Doctrine\Inflector\InflectorFactory;
 use Doctrine\Inflector\Language;
 use Doctrine\ORM\EntityManager;
-use Doctrine\Persistence\Mapping\ClassMetadata;
-use Doctrine\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\Persistence\ObjectRepository;
 use Import\Exception\UnsupportedDatabaseTypeException;
 use Import\Writer;
@@ -29,7 +29,7 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
     /**
      * Doctrine object manager
      */
-    protected ?ObjectManager $objectManager;
+    protected ?EntityManagerInterface $entityManager;
 
     /**
      * Fully qualified model name
@@ -42,7 +42,7 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
     protected ObjectRepository $objectRepository;
 
 
-    protected ClassMetadata $objectMetadata;
+    protected ClassMetadataInfo $objectMetadata;
 
     /**
      * Original Doctrine logger
@@ -64,25 +64,31 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
      */
     protected array $lookupMethod;
 
+    protected ?int $lastInsertedId = null;
+
     /**
      * Constructor
      *
-     * @param ObjectManager $objectManager
+     * @param EntityManagerInterface $entityManager
      * @param string $objectName
      * @param array|string|null $index Field or fields to find current entities by
      * @param string $lookupMethod Method used for looking up the item
      * @throws UnsupportedDatabaseTypeException
      */
     public function __construct(
-        ObjectManager $objectManager,
+        EntityManagerInterface $entityManager,
         string $objectName,
         array|string $index = null,
         string $lookupMethod = 'findOneBy'
     ) {
-        $this->ensureSupportedObjectManager($objectManager);
-        $this->objectManager = $objectManager;
-        $this->objectRepository = $objectManager->getRepository($objectName);
-        $this->objectMetadata = $objectManager->getClassMetadata($objectName);
+        $this->ensureSupportedEntityManager($entityManager);
+        $this->entityManager = $entityManager;
+        $this->objectRepository = $entityManager->getRepository($objectName);
+        $this->objectMetadata = $entityManager->getClassMetadata($objectName);
+
+        //$this->objectMetadata->setIdGenerator(new \Doctrine\ORM\Id\AssignedGenerator());
+        //$this->objectMetadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
+
         //translate objectName in case a namespace alias is used
         $this->objectName = $this->objectMetadata->getName();
         if ($index) {
@@ -165,7 +171,7 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
         $this->loadAssociationObjectsToObject($item, $object);
         $this->updateObject($item, $object);
 
-        $this->objectManager->persist($object);
+        $this->entityManager->persist($object);
     }
 
     /**
@@ -173,8 +179,25 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
      */
     public function flush()
     {
-        $this->objectManager->flush();
-        $this->objectManager->clear($this->objectName);
+        $this->entityManager->flush();
+        $this->entityManager->clear($this->objectName);
+    }
+
+    /**
+     * Return the last inserted id
+     * @return false|int|string
+     * @throws Exception
+     */
+    public function getLastId(): false|int|string
+    {
+        if(empty($this->lookupFields) || count($this->lookupFields) > 1 || !$this->truncate){
+            return false;
+        }
+
+        $tableName = $this->objectMetadata->table['name'];
+        $connection = $this->entityManager->getConnection();
+        $result = $connection->executeQuery('SELECT max('.current($this->lookupFields).') FROM '.$tableName);
+        return current($result->fetchFirstColumn());
     }
 
     /**
@@ -218,7 +241,7 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
                 continue;
             }
 
-            if (!($value instanceof DateTime)
+            if (!($value instanceof DateTimeInterface)
                 || $value != $this->objectMetadata->getFieldValue($object, $fieldName)
             ) {
                 $setter = 'set' . $classifiedFieldName;
@@ -236,7 +259,7 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
 
             $value = null;
             if (isset($item[$associationMapping['fieldName']]) && !is_object($item[$associationMapping['fieldName']])) {
-                $value = $this->objectManager->getReference($associationMapping['targetEntity'], $item[$associationMapping['fieldName']]);
+                $value = $this->entityManager->getReference($associationMapping['targetEntity'], $item[$associationMapping['fieldName']]);
             }
 
             if (null === $value) {
@@ -255,9 +278,11 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
     protected function truncateTable()
     {
         $tableName = $this->objectMetadata->table['name'];
-        $connection = $this->objectManager->getConnection();
+        $connection = $this->entityManager->getConnection();
+        $connection->executeQuery('SET FOREIGN_KEY_CHECKS=0;');
         $query = $connection->getDatabasePlatform()->getTruncateTableSQL($tableName, true);
         $connection->executeQuery($query);
+        $connection->executeQuery('SET FOREIGN_KEY_CHECKS=1;');
     }
 
     /**
@@ -265,9 +290,9 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
      */
     protected function disableLogging()
     {
-        if (!($this->objectManager instanceof EntityManager)) return;
+        if (!($this->entityManager instanceof EntityManager)) return;
 
-        $config = $this->objectManager->getConnection()->getConfiguration();
+        $config = $this->entityManager->getConnection()->getConfiguration();
         $this->originalLogger = $config->getSQLLogger();
         $config->setSQLLogger();
     }
@@ -277,9 +302,9 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
      */
     protected function reEnableLogging()
     {
-        if (!($this->objectManager instanceof EntityManager)) return;
+        if (!($this->entityManager instanceof EntityManager)) return;
 
-        $config = $this->objectManager->getConnection()->getConfiguration();
+        $config = $this->entityManager->getConnection()->getConfiguration();
         $config->setSQLLogger($this->originalLogger);
     }
 
@@ -311,10 +336,10 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
     /**
      * @throws UnsupportedDatabaseTypeException
      */
-    protected function ensureSupportedObjectManager(?ObjectManager $objectManager)
+    protected function ensureSupportedEntityManager(?EntityManager $entityManager)
     {
-        if (!($objectManager instanceof EntityManager)) {
-            throw new UnsupportedDatabaseTypeException($objectManager);
+        if (!($entityManager instanceof EntityManager)) {
+            throw new UnsupportedDatabaseTypeException($entityManager);
         }
     }
 }
