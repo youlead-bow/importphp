@@ -38,15 +38,16 @@ class Result
      * @param DateTime $endTime
      * @param integer $totalCount
      * @param SplObjectStorage $exceptions
+     * @param bool $bGlobal
      */
-    public function __construct(?string $name, DateTime $startTime, DateTime $endTime, int $totalCount, SplObjectStorage $exceptions)
+    public function __construct(?string $name, DateTime $startTime, DateTime $endTime, int $totalCount, SplObjectStorage $exceptions, bool $bGlobal = false)
     {
         $this->name                = $name;
         $this->startTime           = $startTime;
         $this->endTime             = $endTime;
         $this->elapsed             = $startTime->diff($endTime);
         $this->totalProcessedCount = $totalCount;
-        $this->errorCount          = count($exceptions);
+        $this->errorCount          = $bGlobal ? $totalCount : count($exceptions);
         $this->successCount        = $totalCount - $this->errorCount;
         $this->exceptions          = $exceptions;
     }
