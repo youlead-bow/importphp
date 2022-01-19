@@ -8,7 +8,7 @@ use Symfony\Component\PropertyAccess\PropertyAccessor;
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
  */
-class ValueConverterStep implements Step
+class ValueConverterStep implements CountableStep
 {
     private array $converters = [];
 
@@ -41,5 +41,13 @@ class ValueConverterStep implements Step
         }
 
         return $next($item);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function count(): int
+    {
+        return count($this->converters);
     }
 }

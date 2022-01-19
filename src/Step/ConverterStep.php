@@ -2,12 +2,10 @@
 
 namespace Import\Step;
 
-use Import\Step;
-
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
  */
-class ConverterStep implements Step
+class ConverterStep implements CountableStep
 {
     private array $converters;
 
@@ -42,5 +40,13 @@ class ConverterStep implements Step
         }
 
         return $next($item);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function count(): int
+    {
+        return count($this->converters);
     }
 }
