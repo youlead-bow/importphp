@@ -250,7 +250,7 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
     protected function updateObject(array $item, object $object)
     {
         $inflector = InflectorFactory::createForLanguage(Language::FRENCH)->build();
-        $fieldNames = array_merge($this->objectMetadata->getFieldNames(), $this->objectMetadata->getAssociationNames());
+        $fieldNames = $this->objectMetadata->getFieldNames();
         foreach ($fieldNames as $fieldName) {
             $value = null;
             $classifiedFieldName = $inflector->classify($fieldName);
