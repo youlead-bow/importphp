@@ -28,7 +28,7 @@ class StringToObjectConverter
     /**
      * {}
      */
-    public function __invoke($input)
+    public function __invoke(mixed $input)
     {
         $method = 'findOneBy'.ucfirst($this->property);
 

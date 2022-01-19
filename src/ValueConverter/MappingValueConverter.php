@@ -19,7 +19,7 @@ class MappingValueConverter
         $this->mapping = $mapping;
     }
 
-    public function __invoke($input)
+    public function __invoke(mixed $input)
     {
         if (isset($this->mapping[$input]) || array_key_exists($input, $this->mapping)) {
             return $this->mapping[$input];

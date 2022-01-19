@@ -24,7 +24,7 @@ class ArrayValueConverterMap
     /**
      * {}
      */
-    public function __invoke($input): array
+    public function __invoke(mixed $input): array
     {
         if (!is_array($input)) {
             throw new InvalidArgumentException('Input of a ArrayValueConverterMap must be an array');
@@ -42,7 +42,7 @@ class ArrayValueConverterMap
      * @param $item
      * @return mixed
      */
-    protected function convertItem($item): mixed
+    protected function convertItem(array $item): mixed
     {
         foreach ($item as $key => $value) {
             if (!isset($this->converters[$key])) {

@@ -49,7 +49,7 @@ class ObjectConverter
     /**
      * {}
      */
-    public function __invoke($input)
+    public function __invoke(mixed $input)
     {
         if (!is_object($input)) {
             throw new UnexpectedTypeException($input, 'object');
