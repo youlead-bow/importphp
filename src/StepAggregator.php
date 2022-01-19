@@ -4,6 +4,7 @@ namespace Import;
 
 use Closure;
 use DateTime;
+use Exception;
 use Import\Step\PriorityStep;
 use JetBrains\PhpStorm\Pure;
 use Psr\Log\LoggerAwareInterface;
@@ -82,6 +83,7 @@ class StepAggregator implements Workflow, LoggerAwareInterface
 
     /**
      * {@inheritdoc}
+     * @throws Exception
      */
     public function process(): Result
     {
@@ -99,12 +101,21 @@ class StepAggregator implements Workflow, LoggerAwareInterface
 
         // Read all items
         foreach ($this->reader as $item) {
-            if ($signal->isTriggered()) {
-                break;
-            }
+            try {
+                if ($signal->isTriggered()) {
+                    break;
+                }
 
-            if (false === $pipeline($item)) {
-                continue;
+                if (false === $pipeline($item)) {
+                    continue;
+                }
+            } catch(Exception $e) {
+                if (!$this->skipItemOnFailure) {
+                    throw $e;
+                }
+
+                $exceptions->attach($e, $index);
+                $this->logger->error($e->getMessage());
             }
 
             $count++;
