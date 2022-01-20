@@ -346,9 +346,10 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
                 }
 
                 $object = call_user_func($this->lookupMethod, $lookupConditions);
-            } else {
-                $object = $this->objectRepository->find(current($item));
             }
+            /*else {
+                $object = $this->objectRepository->find(current($item));
+            }*/
         }
 
         if (!$object) {
