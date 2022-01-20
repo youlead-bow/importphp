@@ -22,7 +22,9 @@
         "ext-iconv": "*",
         "ext-mbstring": "*",
         "doctrine/instantiator": "^1.4",
-        "doctrine/orm": "^2.11"
+        "doctrine/orm": "^2.11",
+        "phpstan/phpstan": "^1.4",
+        "jetbrains/phpstorm-attributes": "^1.0"
     },
     "config": {
         "allow-plugins": {

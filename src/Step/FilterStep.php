@@ -8,7 +8,7 @@ use SplPriorityQueue;
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
  */
-class FilterStep implements Step
+class FilterStep implements CountableStep
 {
     private SplPriorityQueue $filters;
 
@@ -41,5 +41,13 @@ class FilterStep implements Step
         }
 
         return $next($item);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function count(): int
+    {
+        return $this->filters->count();
     }
 }

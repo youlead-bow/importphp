@@ -12,7 +12,7 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
  */
-class MappingStep implements Step
+class MappingStep implements CountableStep
 {
     private array $mappings;
 
@@ -67,5 +67,13 @@ class MappingStep implements Step
         }
 
         return $next($item);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function count(): int
+    {
+        return count($this->mappings);
     }
 }

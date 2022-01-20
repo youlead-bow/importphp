@@ -4,6 +4,7 @@ namespace Import;
 
 use Closure;
 use DateTime;
+use Exception;
 use Import\Step\PriorityStep;
 use JetBrains\PhpStorm\Pure;
 use Psr\Log\LoggerAwareInterface;
@@ -82,9 +83,11 @@ class StepAggregator implements Workflow, LoggerAwareInterface
 
     /**
      * {@inheritdoc}
+     * @throws Exception
      */
     public function process(): Result
     {
+        $global     = false;
         $count      = 0;
         $exceptions = new SplObjectStorage();
         $startTime  = new DateTime;
@@ -98,23 +101,41 @@ class StepAggregator implements Workflow, LoggerAwareInterface
         $pipeline = $this->buildPipeline();
 
         // Read all items
-        foreach ($this->reader as $item) {
-            if ($signal->isTriggered()) {
-                break;
-            }
+        foreach ($this->reader as $index => $item) {
+            try {
+                if ($signal->isTriggered()) {
+                    break;
+                }
 
-            if (false === $pipeline($item)) {
-                continue;
+                if (false === $pipeline($item)) {
+                    continue;
+                }
+            } catch(Exception $e) {
+                if (!$this->skipItemOnFailure) {
+                    throw $e;
+                }
+
+                $exceptions->attach($e, $index);
+                $this->logger->error($e->getMessage());
             }
 
             $count++;
         }
 
         foreach ($this->writers as $writer) {
-            $writer->finish();
+            try {
+                $writer->finish();
+            }  catch(Exception $e) {
+                if (!$this->skipItemOnFailure) {
+                    throw $e;
+                }
+                $global = true;
+                $exceptions->attach($e);
+                $this->logger->error($e->getMessage());
+            }
         }
 
-        return new Result($this->name, $startTime, new DateTime, $count, $exceptions);
+        return new Result($this->name, $startTime, new DateTime, $count, $exceptions, $global);
     }
 
     /**

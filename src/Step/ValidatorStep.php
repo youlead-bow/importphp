@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
  */
-class ValidatorStep implements PriorityStep
+class ValidatorStep implements PriorityStep, CountableStep
 {
     private array $constraints = [];
 
@@ -19,6 +19,8 @@ class ValidatorStep implements PriorityStep
     private bool $throwExceptions = false;
 
     private int $line = 0;
+
+    private int $counter = 0;
 
     private ValidatorInterface $validator;
 
@@ -43,6 +45,7 @@ class ValidatorStep implements PriorityStep
         }
 
         $this->constraints['fields'][$field][] = $constraint;
+        $this->counter++;
 
         return $this;
     }
@@ -111,5 +114,10 @@ class ValidatorStep implements PriorityStep
     public function getPriority(): int
     {
         return 128;
+    }
+
+    public function count(): int
+    {
+        return $this->counter;
     }
 }

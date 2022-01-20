@@ -28,7 +28,7 @@ class CharsetValueConverter
     /**
      * {}
      */
-    public function __invoke($input): array|bool|string|null
+    public function __invoke(mixed $input): array|bool|string|null
     {
         if (function_exists('mb_convert_encoding')) {
             return mb_convert_encoding($input, $this->charset, $this->inCharset);
