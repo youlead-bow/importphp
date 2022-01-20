@@ -2,6 +2,8 @@
 
 namespace Import\ValueConverter;
 
+use DateTime;
+use DateTimeImmutable;
 use DateTimeInterface;
 use Exception;
 use Import\Exception\UnexpectedValueException;
@@ -56,7 +58,7 @@ class DateTimeValueConverter
         }
 
         /** @var DateTimeInterface $className */
-        $className = $this->immutable ? 'DateTimeImmutable' : 'DateTime';
+        $className = $this->immutable ? DateTimeImmutable::class : DateTime::class;
 
         if ($this->inputFormat) {
             $date = $className::createFromFormat($this->inputFormat, $input);
