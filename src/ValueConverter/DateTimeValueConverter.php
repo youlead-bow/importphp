@@ -2,7 +2,7 @@
 
 namespace Import\ValueConverter;
 
-use DateTime;
+use DateTimeInterface;
 use Exception;
 use Import\Exception\UnexpectedValueException;
 
@@ -28,15 +28,17 @@ class DateTimeValueConverter
      * @see http://php.net/manual/en/datetime.createfromformat.php
      */
     protected ?string $outputFormat;
+    private bool $immutable;
 
     /**
      * @param string|null $inputFormat
      * @param string|null $outputFormat
      */
-    public function __construct(string $inputFormat = null, string $outputFormat = null)
+    public function __construct(string $inputFormat = null, string $outputFormat = null, bool $immutable = true)
     {
         $this->inputFormat  = $inputFormat;
         $this->outputFormat = $outputFormat;
+        $this->immutable = $immutable;
     }
 
     /**
@@ -47,21 +49,24 @@ class DateTimeValueConverter
      * the \DateTime instance     *
      * @throws UnexpectedValueException|Exception
      */
-    public function __invoke(mixed $input): DateTime|string|null
+    public function __invoke(mixed $input): DateTimeInterface|string|null
     {
         if (!$input) {
             return null;
         }
 
+        /** @var DateTimeInterface $className */
+        $className = $this->immutable ? 'DateTimeImmutable' : 'DateTime';
+
         if ($this->inputFormat) {
-            $date = DateTime::createFromFormat($this->inputFormat, $input);
+            $date = $className::createFromFormat($this->inputFormat, $input);
             if (false === $date) {
                 throw new UnexpectedValueException(
                     $input . ' is not a valid date/time according to format ' . $this->inputFormat
                 );
             }
         } else {
-            $date = new DateTime($input);
+            $date = new $className($input);
         }
 
         if ($this->outputFormat) {
