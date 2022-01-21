@@ -39,7 +39,7 @@ class DbalReader implements CountableReader
      *
      * @param boolean $calculate
      */
-    public function setRowCountCalculated(bool $calculate = true)
+    public function setRowCountCalculated(bool $calculate = true): void
     {
         $this->rowCountCalculated = $calculate;
     }
@@ -57,7 +57,7 @@ class DbalReader implements CountableReader
     /**
      * Set Query string with Parameters
      */
-    public function setSql(string $sql, array $params = [])
+    public function setSql(string $sql, array $params = []): void
     {
         $this->sql = $sql;
 
@@ -67,7 +67,7 @@ class DbalReader implements CountableReader
     /**
      * Set SQL parameters
      */
-    public function setSqlParameters(array $params)
+    public function setSqlParameters(array $params): void
     {
         $this->params = $params;
 
@@ -93,7 +93,7 @@ class DbalReader implements CountableReader
      * {@inheritdoc}
      * @throws Exception
      */
-    public function next()
+    public function next(): void
     {
         $this->key++;
         $this->data = $this->result->fetchAssociative();
@@ -124,7 +124,7 @@ class DbalReader implements CountableReader
      * {@inheritdoc}
      * @throws Exception
      */
-    public function rewind()
+    public function rewind(): void
     {
         if (null === $this->stmt) {
             $this->stmt = $this->prepare($this->sql, $this->params);
@@ -159,7 +159,7 @@ class DbalReader implements CountableReader
     /**
      * @throws Exception
      */
-    private function doCalcRowCount()
+    private function doCalcRowCount(): void
     {
         $statement = $this->prepare(sprintf('SELECT COUNT(*) FROM (%s) AS port_cnt', $this->sql), $this->params);
         $result = $statement->executeQuery();
