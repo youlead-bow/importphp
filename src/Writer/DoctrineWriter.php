@@ -48,7 +48,7 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
     /**
      * Original Doctrine logger
      */
-    protected SQLLogger $originalLogger;
+    protected ?SQLLogger $originalLogger;
 
     /**
      * Whether to truncate the table first
