@@ -97,7 +97,6 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
         $this->entityManager = $entityManager;
         $this->objectRepository = $entityManager->getRepository($objectName);
         $this->objectMetadata = $entityManager->getClassMetadata($objectName);
-        $this->objectMetadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
 
         //translate objectName in case a namespace alias is used
         $this->objectName = $this->objectMetadata->getName();
@@ -154,11 +153,12 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
         return $this->autoIncrement;
     }
 
-    public function setAutoIncrement(int $autoIncrement): static
-    {
-        $this->autoIncrement = $autoIncrement;
+    public function enableAutoIncrement(){
+        $this->autoIncrement = self::AUTO_INCREMENT_ENABLE;
+    }
 
-        return $this;
+    public function disableAutoIncrement(){
+        $this->autoIncrement = self::AUTO_INCREMENT_DISABLE;
     }
 
 
@@ -174,14 +174,7 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
             $this->truncateTable();
         }
 
-        switch ($this->autoIncrement){
-            case self::AUTO_INCREMENT_ENABLE:
-                $this->enableAutoIncrement();
-                break;
-            default:
-                $this->disableAutoIncrement();
-                break;
-        }
+        $this->setAutoIncrement();
     }
 
     /**
@@ -303,13 +296,19 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
         }
     }
 
-    protected function enableAutoIncrement(){
-        $this->objectMetadata->setIdGenerator(new IdentityGenerator());
+    protected function setAutoIncrement(): static
+    {
+        $this->objectMetadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
+
+        if($this->autoIncrement == self::AUTO_INCREMENT_ENABLE){
+            $this->objectMetadata->setIdGenerator(new IdentityGenerator());
+        } else {
+            $this->objectMetadata->setIdGenerator(new AssignedGenerator());
+        }
+
+        return $this;
     }
 
-    protected function disableAutoIncrement(){
-        $this->objectMetadata->setIdGenerator(new AssignedGenerator());
-    }
 
     /**
      * Truncate the database table for this writer
