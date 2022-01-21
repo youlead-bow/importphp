@@ -16,6 +16,7 @@ use Import\Exception\UnsupportedDatabaseTypeException;
 use Import\Writer;
 use InvalidArgumentException;
 use RuntimeException;
+use function Symfony\Component\String\s;
 
 /**
  * A bulk Doctrine writer
@@ -27,6 +28,10 @@ use RuntimeException;
  */
 class DoctrineWriter implements Writer, Writer\FlushableWriter
 {
+    const AUTO_INCREMENT_ENABLE = 1;
+    const AUTO_INCREMENT_DISABLE = 0;
+    const AUTO_INCREMENT_DEFAUT = -1;
+
     /**
      * Doctrine object manager
      */
@@ -51,9 +56,9 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
     protected ?SQLLogger $originalLogger;
 
     /**
-     * Whether to truncate the table first
+     * AutoIncrement management
      */
-    protected bool $disableAutoIncrement = true;
+    protected int $autoIncrement = self::AUTO_INCREMENT_DEFAUT;
 
     /**
      * Whether to truncate the table first
@@ -142,14 +147,14 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
         return $this;
     }
 
-    public function getDisableAutoIncrement(): bool
+    public function getAutoIncrement(): int
     {
-        return $this->disableAutoIncrement;
+        return $this->autoIncrement;
     }
 
-    public function setDisableAutoIncrement(bool $disableAutoIncrement): static
+    public function setAutoIncrement(int $autoIncrement): static
     {
-        $this->disableAutoIncrement = $disableAutoIncrement;
+        $this->autoIncrement = $autoIncrement;
 
         return $this;
     }
@@ -163,8 +168,13 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
     {
         $this->disableLogging();
 
-        if (true === $this->disableAutoIncrement) {
-            $this->disableAutoIncrement();
+        switch ($this->autoIncrement){
+            case self::AUTO_INCREMENT_ENABLE:
+                $this->enableAutoIncrement();
+                break;
+            default:
+                $this->disableAutoIncrement();
+                break;
         }
 
         if (true === $this->truncate) {
@@ -291,8 +301,11 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
         }
     }
 
+    protected function enableAutoIncrement(){
+        $this->objectMetadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_IDENTITY);
+    }
+
     protected function disableAutoIncrement(){
-        $this->objectMetadata->setIdGenerator(new AssignedGenerator());
         $this->objectMetadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
     }
 
