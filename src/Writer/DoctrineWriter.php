@@ -92,11 +92,6 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
         $this->objectRepository = $entityManager->getRepository($objectName);
         $this->objectMetadata = $entityManager->getClassMetadata($objectName);
 
-        if($this->disableAutoIncrement) {
-            $this->objectMetadata->setIdGenerator(new AssignedGenerator());
-            $this->objectMetadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
-        }
-
         //translate objectName in case a namespace alias is used
         $this->objectName = $this->objectMetadata->getName();
         if ($index) {
@@ -167,6 +162,10 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
     public function prepare()
     {
         $this->disableLogging();
+
+        if (true === $this->disableAutoIncrement) {
+            $this->disableAutoIncrement();
+        }
 
         if (true === $this->truncate) {
             $this->truncateTable();
@@ -292,6 +291,11 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
         }
     }
 
+    protected function disableAutoIncrement(){
+        $this->objectMetadata->setIdGenerator(new AssignedGenerator());
+        $this->objectMetadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
+    }
+
     /**
      * Truncate the database table for this writer
      * @throws Exception
@@ -342,9 +346,10 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
                 }
 
                 $object = call_user_func($this->lookupMethod, $lookupConditions);
-            } else {
-                $object = $this->objectRepository->find(current($item));
             }
+            /*else {
+                $object = $this->objectRepository->find(current($item));
+            }*/
         }
 
         if (!$object) {
