@@ -10,6 +10,7 @@ use Doctrine\Inflector\Language;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Id\AssignedGenerator;
+use Doctrine\ORM\Id\IdentityGenerator;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\Persistence\ObjectRepository;
 use Import\Exception\UnsupportedDatabaseTypeException;
@@ -96,6 +97,7 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
         $this->entityManager = $entityManager;
         $this->objectRepository = $entityManager->getRepository($objectName);
         $this->objectMetadata = $entityManager->getClassMetadata($objectName);
+        $this->objectMetadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
 
         //translate objectName in case a namespace alias is used
         $this->objectName = $this->objectMetadata->getName();
@@ -168,6 +170,10 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
     {
         $this->disableLogging();
 
+        if (true === $this->truncate) {
+            $this->truncateTable();
+        }
+
         switch ($this->autoIncrement){
             case self::AUTO_INCREMENT_ENABLE:
                 $this->enableAutoIncrement();
@@ -175,10 +181,6 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
             default:
                 $this->disableAutoIncrement();
                 break;
-        }
-
-        if (true === $this->truncate) {
-            $this->truncateTable();
         }
     }
 
@@ -302,11 +304,11 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
     }
 
     protected function enableAutoIncrement(){
-        $this->objectMetadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_IDENTITY);
+        $this->objectMetadata->setIdGenerator(new IdentityGenerator());
     }
 
     protected function disableAutoIncrement(){
-        $this->objectMetadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
+        $this->objectMetadata->setIdGenerator(new AssignedGenerator());
     }
 
     /**
