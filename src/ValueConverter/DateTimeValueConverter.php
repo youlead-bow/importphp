@@ -53,7 +53,7 @@ class DateTimeValueConverter
      */
     public function __invoke(mixed $input): DateTimeInterface|string|null
     {
-        if (!$input) {
+        if ($this->isEmpty($input)) {
             return null;
         }
 
@@ -77,5 +77,10 @@ class DateTimeValueConverter
 
         //if no output format specified we just return the \DateTime instance
         return $date;
+    }
+
+    private function isEmpty(mixed $input): bool
+    {
+        return (empty($input) || $input == '0000-00-00' || $input == '00:00:00' || $input == '0000-00-00 00:00:00');
     }
 }
