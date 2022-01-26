@@ -95,6 +95,10 @@ class CsvReader implements CountableReader, SeekableIterator
 
         // Since the CSV has column headers use them to construct an associative array for the columns in this line
         do {
+            if(null !== $this->headerRowNumber && $this->key() === $this->headerRowNumber){
+                $this->next();
+            }
+
             $line = $this->file->current();
 
             // In non-strict mode pad/slice the line to match the column headers
@@ -181,9 +185,6 @@ class CsvReader implements CountableReader, SeekableIterator
     public function rewind(): void
     {
         $this->file->rewind();
-        if (null !== $this->headerRowNumber) {
-            $this->file->seek($this->headerRowNumber + 1);
-        }
     }
 
     /**
