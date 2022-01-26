@@ -178,7 +178,7 @@ class CsvReader implements CountableReader, SeekableIterator
      * row. That way, when you iterate over the rows, that header row is
      * skipped.
      */
-    public function rewind()
+    public function rewind(): void
     {
         $this->file->rewind();
         if (null !== $this->headerRowNumber) {
@@ -205,7 +205,7 @@ class CsvReader implements CountableReader, SeekableIterator
     /**
      * {@inheritdoc}
      */
-    public function next()
+    public function next(): void
     {
         $this->file->next();
     }
@@ -221,7 +221,7 @@ class CsvReader implements CountableReader, SeekableIterator
     /**
      * {@inheritdoc}
      */
-    public function key()
+    public function key(): int
     {
         return $this->file->key();
     }
@@ -229,7 +229,7 @@ class CsvReader implements CountableReader, SeekableIterator
     /**
      * {@inheritdoc}
      */
-    public function seek($offset)
+    public function seek($offset): void
     {
         $this->file->seek($offset);
     }
