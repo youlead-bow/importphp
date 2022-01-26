@@ -55,7 +55,7 @@ class CsvReader implements CountableReader, SeekableIterator
     /**
      * How to handle duplicate headers
      */
-    protected int $duplicateHeadersFlag;
+    protected ?int $duplicateHeadersFlag = null;
 
     /**
      * @param SplFileObject $file
