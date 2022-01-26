@@ -18,7 +18,7 @@ class CsvReader implements CountableReader, SeekableIterator
     /**
      * Number of the row that contains the column names
      */
-    protected ?int $headerRowNumber;
+    protected ?int $headerRowNumber = null;
 
     /**
      * CSV file
@@ -40,7 +40,7 @@ class CsvReader implements CountableReader, SeekableIterator
     /**
      * Total number of rows in the CSV file
      */
-    protected ?int $count;
+    protected ?int $count = null;
 
     /**
      * Faulty CSV rows
