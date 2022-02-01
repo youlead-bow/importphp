@@ -17,7 +17,6 @@ use Import\Exception\UnsupportedDatabaseTypeException;
 use Import\Writer;
 use InvalidArgumentException;
 use RuntimeException;
-use function Symfony\Component\String\s;
 
 /**
  * A bulk Doctrine writer
@@ -215,13 +214,10 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
      */
     public function getLastId(): false|int|string
     {
-        if(empty($this->lookupFields) || count($this->lookupFields) > 1 || !$this->truncate){
-            return false;
-        }
-
+        $fieldId = !empty($this->lookupFields) ? current($this->lookupFields) : 'id';
         $tableName = $this->objectMetadata->table['name'];
         $connection = $this->entityManager->getConnection();
-        $result = $connection->executeQuery('SELECT max('.current($this->lookupFields).') FROM '.$tableName);
+        $result = $connection->executeQuery('SELECT max('.$fieldId.') FROM '.$tableName);
         return current($result->fetchFirstColumn());
     }
 
