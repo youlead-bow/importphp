@@ -5,6 +5,7 @@ namespace Import;
 use Closure;
 use DateTime;
 use Exception;
+use Import\Step\IndexStep;
 use Import\Step\PriorityStep;
 use JetBrains\PhpStorm\Pure;
 use Psr\Log\LoggerAwareInterface;
@@ -107,7 +108,7 @@ class StepAggregator implements Workflow, LoggerAwareInterface
                     break;
                 }
 
-                if (false === $pipeline($item)) {
+                if (false === $pipeline($item, $index)) {
                     continue;
                 }
             } catch(Exception $e) {
@@ -162,12 +163,15 @@ class StepAggregator implements Workflow, LoggerAwareInterface
      */
     private function buildPipeline(): callable|Closure
     {
-        $nextCallable = function ($item) {
+        $nextCallable = function ($item, $index) {
             // the final callable is a no-op
         };
 
         foreach ($this->getStepsSortedDescByPriority() as $step) {
-            $nextCallable = function ($item) use ($step, $nextCallable) {
+            $nextCallable = function ($item, $index) use ($step, $nextCallable) {
+                if($step instanceof IndexStep){
+                    $step->setIndex($index);
+                }
                 return $step->process($item, $nextCallable);
             };
         }

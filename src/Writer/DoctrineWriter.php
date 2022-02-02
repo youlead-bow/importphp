@@ -26,7 +26,7 @@ use RuntimeException;
  *
  * @author David de Boer <david@ddeboer.nl>
  */
-class DoctrineWriter implements Writer, Writer\FlushableWriter
+class DoctrineWriter implements Writer, FlushableWriter, IndexableWriter
 {
     const AUTO_INCREMENT_ENABLE = 1;
     const AUTO_INCREMENT_DISABLE = 0;
@@ -69,6 +69,16 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
      * debug mode
      */
     protected bool $debug = false;
+
+    /**
+     * @var int Batch size
+     */
+    protected int $batchSize = 50000;
+
+    /**
+     * @var int Item index
+     */
+    protected int $index = 0;
 
     /**
      * List of fields used to look up an object
@@ -162,6 +172,14 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
     }
 
     /**
+     * @param int $batchSize
+     */
+    public function setBatchSize(int $batchSize): void
+    {
+        $this->batchSize = $batchSize;
+    }
+
+    /**
      * Disable truncation
      */
     public function disableTruncate(): static
@@ -214,6 +232,14 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
     }
 
     /**
+     * @param int $index
+     */
+    public function setIndex(int $index): void
+    {
+        $this->index = $index;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function writeItem(array $item)
@@ -224,6 +250,9 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
         $this->updateObject($item, $object);
 
         $this->entityManager->persist($object);
+        if($this->index % $this->batchSize === 0){
+            $this->flush();
+        }
     }
 
     /**
