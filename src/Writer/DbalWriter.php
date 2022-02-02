@@ -18,6 +18,7 @@ class DbalWriter implements Writer
     protected bool $truncate = true;
     private ?SQLLogger $originalLogger;
     private ?string $query = null;
+    private bool $debug = false;
 
     public function __construct(
         protected Connection $connection,
@@ -30,7 +31,9 @@ class DbalWriter implements Writer
      */
     public function prepare()
     {
-        $this->disableLogging();
+        if(!$this->debug) {
+            $this->disableLogging();
+        }
 
         if (true === $this->truncate) {
             $this->truncateTable();
@@ -98,7 +101,10 @@ class DbalWriter implements Writer
     public function finish()
     {
         $this->connection->commit();
-        $this->reEnableLogging();
+
+        if(!$this->debug) {
+            $this->reEnableLogging();
+        }
     }
 
     /**
@@ -127,6 +133,22 @@ class DbalWriter implements Writer
         $this->truncate = false;
 
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDebug(): bool
+    {
+        return $this->debug;
+    }
+
+    /**
+     * @param bool $debug
+     */
+    public function setDebug(bool $debug): void
+    {
+        $this->debug = $debug;
     }
 
     /**

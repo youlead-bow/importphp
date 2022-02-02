@@ -17,7 +17,6 @@ use Import\Exception\UnsupportedDatabaseTypeException;
 use Import\Writer;
 use InvalidArgumentException;
 use RuntimeException;
-use function Symfony\Component\String\s;
 
 /**
  * A bulk Doctrine writer
@@ -65,6 +64,11 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
      * Whether to truncate the table first
      */
     protected bool $truncate = true;
+
+    /**
+     * debug mode
+     */
+    protected bool $debug = false;
 
     /**
      * List of fields used to look up an object
@@ -139,6 +143,25 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
     }
 
     /**
+     * @return bool
+     */
+    public function isDebug(): bool
+    {
+        return $this->debug;
+    }
+
+    /**
+     * @param bool $debug
+     * @return DoctrineWriter
+     */
+    public function setDebug(bool $debug): static
+    {
+        $this->debug = $debug;
+
+        return $this;
+    }
+
+    /**
      * Disable truncation
      */
     public function disableTruncate(): static
@@ -168,7 +191,9 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
      */
     public function prepare()
     {
-        $this->disableLogging();
+        if(!$this->debug) {
+            $this->disableLogging();
+        }
 
         if (true === $this->truncate) {
             $this->truncateTable();
@@ -183,7 +208,9 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
     public function finish()
     {
         $this->flush();
-        $this->reEnableLogging();
+        if(!$this->debug) {
+            $this->reEnableLogging();
+        }
     }
 
     /**
@@ -215,13 +242,10 @@ class DoctrineWriter implements Writer, Writer\FlushableWriter
      */
     public function getLastId(): false|int|string
     {
-        if(empty($this->lookupFields) || count($this->lookupFields) > 1 || !$this->truncate){
-            return false;
-        }
-
+        $fieldId = !empty($this->lookupFields) ? current($this->lookupFields) : 'id';
         $tableName = $this->objectMetadata->table['name'];
         $connection = $this->entityManager->getConnection();
-        $result = $connection->executeQuery('SELECT max('.current($this->lookupFields).') FROM '.$tableName);
+        $result = $connection->executeQuery('SELECT max('.$fieldId.') FROM '.$tableName);
         return current($result->fetchFirstColumn());
     }
 
