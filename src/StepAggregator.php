@@ -108,7 +108,7 @@ class StepAggregator implements Workflow, LoggerAwareInterface
                     break;
                 }
 
-                if (false === $pipeline($item, $index)) {
+                if (false === $pipeline($item, ($index + 1))) {
                     continue;
                 }
             } catch(Exception $e) {
