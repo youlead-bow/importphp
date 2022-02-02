@@ -33,13 +33,13 @@ class ConverterStep implements CountableStep
     /**
      * {@inheritdoc}
      */
-    public function process(mixed $item, callable $next): ?bool
+    public function process(mixed $item, int $index, callable $next): ?bool
     {
         foreach ($this->converters as $converter) {
             $item = call_user_func($converter, $item);
         }
 
-        return $next($item);
+        return $next($item, $index);
     }
 
     /**

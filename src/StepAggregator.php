@@ -169,10 +169,7 @@ class StepAggregator implements Workflow, LoggerAwareInterface
 
         foreach ($this->getStepsSortedDescByPriority() as $step) {
             $nextCallable = function ($item, $index) use ($step, $nextCallable) {
-                if($step instanceof IndexStep){
-                    $step->setIndex($index);
-                }
-                return $step->process($item, $nextCallable);
+                return $step->process($item, $index, $nextCallable);
             };
         }
 

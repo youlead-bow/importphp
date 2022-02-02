@@ -46,7 +46,7 @@ class MappingStep implements CountableStep
      *
      * @throws MappingException
      */
-    public function process(mixed $item, callable $next): ?bool
+    public function process(mixed $item, int $index, callable $next): ?bool
     {
         try {
             foreach ($this->mappings as $from => $to) {
@@ -66,7 +66,7 @@ class MappingStep implements CountableStep
             throw new MappingException('Unable to map item', null, $exception);
         }
 
-        return $next($item);
+        return $next($item, $index);
     }
 
     /**

@@ -8,7 +8,7 @@ use Import\Writer;
 /**
  * @author Márk Sági-Kazár <mark.sagikazar@gmail.com>
  */
-class WriterStep implements Step, IndexStep
+class WriterStep implements Step
 {
     private Writer $writer;
     private int $index = 0;
@@ -24,19 +24,14 @@ class WriterStep implements Step, IndexStep
     /**
      * {@inheritdoc}
      */
-    public function process(mixed $item, callable $next): ?bool
+    public function process(mixed $item, int $index, callable $next): ?bool
     {
         if($this->writer instanceof Writer\IndexableWriter){
-            $this->writer->setIndex($this->index);
+            $this->writer->setIndex($index);
         }
 
         $this->writer->writeItem($item);
 
-        return $next($item);
-    }
-
-    public function setIndex(int $index): void
-    {
-        $this->index = $index;
+        return $next($item, $index);
     }
 }

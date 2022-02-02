@@ -32,7 +32,7 @@ class FilterStep implements CountableStep
     /**
      * {@inheritdoc}
      */
-    public function process(mixed $item, callable $next): ?bool
+    public function process(mixed $item, int $index, callable $next): ?bool
     {
         foreach (clone $this->filters as $filter) {
             if (false === call_user_func($filter, $item)) {
@@ -40,7 +40,7 @@ class FilterStep implements CountableStep
             }
         }
 
-        return $next($item);
+        return $next($item, $index);
     }
 
     /**

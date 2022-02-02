@@ -14,5 +14,5 @@ interface Step
      * @param callable $next
      *
      */
-    public function process(mixed $item, callable $next): ?bool;
+    public function process(mixed $item, int $index, callable $next): ?bool;
 }
