@@ -75,7 +75,7 @@ class DbalWriter implements Writer
     {
         $arrayItem = array_filter($item, 'is_array');
         if(empty($arrayItem)){
-            return array_values($item);
+            return [array_values($item)];
         }
         if(count($arrayItem) > 1){
             $this->connection->rollback();
