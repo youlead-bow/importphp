@@ -27,6 +27,7 @@ class ValueConverterStep implements CountableStep
 
     /**
      * {@inheritdoc}
+     * @throws \Exception
      */
     public function process(mixed $item, int $index, callable $next): ?bool
     {
@@ -35,8 +36,12 @@ class ValueConverterStep implements CountableStep
         foreach ($this->converters as $property => $converters) {
             foreach ($converters as $converter) {
                 $orgValue = $accessor->getValue($item, $property);
-                $value = call_user_func($converter, $orgValue);
-                $accessor->setValue($item, $property, $value);
+                try {
+                    $value = call_user_func($converter, $orgValue);
+                    $accessor->setValue($item, $property, $value);
+                } catch (\Exception $e){
+                    throw new \Exception($property.' '.$e->getMessage());
+                }
             }
         }
 
