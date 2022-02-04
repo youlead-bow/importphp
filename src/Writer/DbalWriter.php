@@ -13,12 +13,14 @@ use Import\Writer;
 use InvalidArgumentException;
 use RuntimeException;
 
-class DbalWriter implements Writer
+class DbalWriter implements Writer, IndexableWriter
 {
     protected bool $truncate = true;
     private ?SQLLogger $originalLogger;
     private ?string $query = null;
     private bool $debug = false;
+    protected int $index = 0;
+    protected int $batchSize = 5000;
 
     public function __construct(
         protected Connection $connection,
@@ -43,6 +45,14 @@ class DbalWriter implements Writer
     }
 
     /**
+     * @param int $index
+     */
+    public function setIndex(int $index): void
+    {
+        $this->index = $index;
+    }
+
+    /**
      * @throws Exception
      */
     public function writeItem(array $item)
@@ -56,6 +66,10 @@ class DbalWriter implements Writer
         $aData = $this->loadQueryData($item);
         foreach ($aData as $data){
             $this->connection->executeStatement($this->query, $data);
+            if($this->index % $this->batchSize === 0){
+                $this->connection->commit();
+                $this->connection->beginTransaction();
+            }
         }
     }
 
@@ -64,7 +78,7 @@ class DbalWriter implements Writer
         $aFields = array_fill_keys(array_keys($item), '?');
         $queryBuilder = $this->connection->createQueryBuilder();
         $queryBuilder->insert($this->table)
-            ->values($aFields);
+                     ->values($aFields);
         $this->query = $queryBuilder->getSQL();
     }
 
@@ -149,6 +163,14 @@ class DbalWriter implements Writer
     public function setDebug(bool $debug): void
     {
         $this->debug = $debug;
+    }
+
+    /**
+     * @param int $batchSize
+     */
+    public function setBatchSize(int $batchSize): void
+    {
+        $this->batchSize = $batchSize;
     }
 
     /**
