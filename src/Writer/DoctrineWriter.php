@@ -275,7 +275,8 @@ class DoctrineWriter implements Writer, FlushableWriter, IndexableWriter
         $tableName = $this->objectMetadata->table['name'];
         $connection = $this->entityManager->getConnection();
         $result = $connection->executeQuery('SELECT max('.$fieldId.') FROM '.$tableName);
-        return current($result->fetchFirstColumn());
+        $lastId = current($result->fetchFirstColumn());
+        return !empty($lastId) ? $lastId : 1;
     }
 
     /**
