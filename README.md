@@ -1,4 +1,4 @@
-# flavou45/importphp
+# youlead-bow/importphp
 
 Import PHP is a data import/export workflow for PHP.
 
@@ -8,7 +8,7 @@ Open a command console, enter your project directory and execute the
 following command to download the latest stable version of this package:
 
 ```bash
-$ composer require flavou45/importphp
+$ composer require youlead-bow/importphp
 ```
 
 This command requires you to have Composer installed globally, as explained
