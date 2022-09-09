@@ -1,9 +1,9 @@
 {
-    "name": "flavou45/importphp",
+    "name": "youlead-bow/importphp",
     "description": "Data import/export workflow ",
     "keywords": [ "data", "import", "export", "doctrine" ],
     "license": "MIT",
-    "homepage": "https://github.com/flavou45/importphp",	
+    "homepage": "https://github.com/youlead-bow/importphp",
     "require": {
         "php": ">=8.0",
         "psr/log": "~2.0",
