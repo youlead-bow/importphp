@@ -36,7 +36,7 @@ class ValidatorFilter
      * @param string $field
      * @param Constraint $constraint
      */
-    public function add(string $field, Constraint $constraint)
+    public function add(string $field, Constraint $constraint): void
     {
         if (!isset($this->constraints[$field])) {
             $this->constraints[$field] = [];
@@ -48,7 +48,7 @@ class ValidatorFilter
     /**
      * @param boolean $flag
      */
-    public function throwExceptions(bool $flag = true)
+    public function throwExceptions(bool $flag = true): void
     {
         $this->throwExceptions = $flag;
     }
@@ -56,7 +56,7 @@ class ValidatorFilter
     /**
      * @param boolean $strict
      */
-    public function setStrict(bool $strict)
+    public function setStrict(bool $strict): void
     {
         $this->strict = $strict;
     }

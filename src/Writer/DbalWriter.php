@@ -16,7 +16,6 @@ use RuntimeException;
 class DbalWriter implements Writer, IndexableWriter
 {
     protected bool $truncate = true;
-    private ?SQLLogger $originalLogger;
     private ?string $query = null;
     private bool $debug = false;
     protected int $index = 0;
@@ -31,12 +30,8 @@ class DbalWriter implements Writer, IndexableWriter
     /**
      * @throws Exception
      */
-    public function prepare()
+    public function prepare(): void
     {
-        if(!$this->debug) {
-            $this->disableLogging();
-        }
-
         if (true === $this->truncate) {
             $this->truncateTable();
         }
@@ -55,7 +50,7 @@ class DbalWriter implements Writer, IndexableWriter
     /**
      * @throws Exception
      */
-    public function writeItem(array $item)
+    public function writeItem(array $item): void
     {
         $this->loadQuery($item);
         if(is_null($this->query)){
@@ -73,7 +68,7 @@ class DbalWriter implements Writer, IndexableWriter
         }
     }
 
-    private function loadQuery(array $item)
+    private function loadQuery(array $item): void
     {
         $aFields = array_fill_keys(array_keys($item), '?');
         $queryBuilder = $this->connection->createQueryBuilder();
@@ -112,13 +107,9 @@ class DbalWriter implements Writer, IndexableWriter
     /**
      * @throws Exception
      */
-    public function finish()
+    public function finish(): void
     {
         $this->connection->commit();
-
-        if(!$this->debug) {
-            $this->reEnableLogging();
-        }
     }
 
     /**
@@ -150,22 +141,6 @@ class DbalWriter implements Writer, IndexableWriter
     }
 
     /**
-     * @return bool
-     */
-    public function isDebug(): bool
-    {
-        return $this->debug;
-    }
-
-    /**
-     * @param bool $debug
-     */
-    public function setDebug(bool $debug): void
-    {
-        $this->debug = $debug;
-    }
-
-    /**
      * @param int $batchSize
      */
     public function setBatchSize(int $batchSize): void
@@ -177,30 +152,11 @@ class DbalWriter implements Writer, IndexableWriter
      * Truncate the database table for this writer
      * @throws Exception
      */
-    protected function truncateTable()
+    protected function truncateTable(): void
     {
         $this->connection->executeQuery('SET FOREIGN_KEY_CHECKS=0;');
         $query = $this->connection->getDatabasePlatform()->getTruncateTableSQL($this->table, true);
         $this->connection->executeQuery($query);
         $this->connection->executeQuery('SET FOREIGN_KEY_CHECKS=1;');
-    }
-
-    /**
-     * Disable Doctrine logging
-     */
-    protected function disableLogging()
-    {
-        $config = $this->connection->getConfiguration();
-        $this->originalLogger = $config->getSQLLogger();
-        $config->setSQLLogger();
-    }
-
-    /**
-     * Re-enable Doctrine logging
-     */
-    protected function reEnableLogging()
-    {
-        $config = $this->connection->getConfiguration();
-        $config->setSQLLogger($this->originalLogger);
     }
 }

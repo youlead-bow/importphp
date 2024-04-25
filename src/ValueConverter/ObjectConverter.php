@@ -31,7 +31,7 @@ class ObjectConverter
      *
      * @param string $propertyPath
      */
-    public function setPropertyPath(string $propertyPath)
+    public function setPropertyPath(string $propertyPath): void
     {
         $this->propertyPath = $propertyPath;
     }

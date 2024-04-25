@@ -145,7 +145,7 @@ class CsvReader implements CountableReader, SeekableIterator
      *
      * @param array $columnHeaders
      */
-    public function setColumnHeaders(array $columnHeaders)
+    public function setColumnHeaders(array $columnHeaders): void
     {
         $this->columnHeaders = array_count_values($columnHeaders);
         $this->headersCount = count($columnHeaders);
@@ -166,7 +166,7 @@ class CsvReader implements CountableReader, SeekableIterator
      *                                   and no duplicate handling has been
      *                                   specified
      */
-    public function setHeaderRowNumber(int $rowNumber, ?int $duplicates = null)
+    public function setHeaderRowNumber(int $rowNumber, ?int $duplicates = null): void
     {
         $this->duplicateHeadersFlag = $duplicates;
         $this->headerRowNumber = $rowNumber;
@@ -290,7 +290,7 @@ class CsvReader implements CountableReader, SeekableIterator
      *
      * @param boolean $strict
      */
-    public function setStrict(bool $strict)
+    public function setStrict(bool $strict): void
     {
         $this->strict = $strict;
     }

@@ -30,7 +30,7 @@ final class AppendReader extends AppendIterator implements Reader
      *
      * @param Reader $reader
      */
-    public function addReader(Reader $reader)
+    public function addReader(Reader $reader): void
     {
         parent::append($reader);
     }
@@ -38,7 +38,7 @@ final class AppendReader extends AppendIterator implements Reader
     /**
      * {@inheritdoc}
      */
-    public function append(Iterator|Reader $iterator)
+    public function append(Iterator|Reader $iterator): void
     {
         $this->addReader($iterator);
     }

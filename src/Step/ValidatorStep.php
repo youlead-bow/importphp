@@ -53,7 +53,7 @@ class ValidatorStep implements PriorityStep, CountableStep
     /**
      * @param boolean $flag
      */
-    public function throwExceptions(bool $flag = true)
+    public function throwExceptions(bool $flag = true): void
     {
         $this->throwExceptions = $flag;
     }

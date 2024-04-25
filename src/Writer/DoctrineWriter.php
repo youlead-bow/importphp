@@ -4,14 +4,14 @@ namespace Import\Writer;
 
 use DateTimeInterface;
 use Doctrine\DBAL\Exception;
-use Doctrine\DBAL\Logging\SQLLogger;
 use Doctrine\Inflector\InflectorFactory;
 use Doctrine\Inflector\Language;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Id\AssignedGenerator;
 use Doctrine\ORM\Id\IdentityGenerator;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\ObjectRepository;
 use Import\Exception\UnsupportedDatabaseTypeException;
 use Import\Writer;
@@ -48,12 +48,8 @@ class DoctrineWriter implements Writer, FlushableWriter, IndexableWriter
     protected ObjectRepository $objectRepository;
 
 
-    protected ClassMetadataInfo $objectMetadata;
+    protected ClassMetadata $objectMetadata;
 
-    /**
-     * Original Doctrine logger
-     */
-    protected ?SQLLogger $originalLogger;
 
     /**
      * AutoIncrement management
@@ -64,11 +60,6 @@ class DoctrineWriter implements Writer, FlushableWriter, IndexableWriter
      * Whether to truncate the table first
      */
     protected bool $truncate = true;
-
-    /**
-     * debug mode
-     */
-    protected bool $debug = false;
 
     /**
      * @var int Batch size
@@ -153,25 +144,6 @@ class DoctrineWriter implements Writer, FlushableWriter, IndexableWriter
     }
 
     /**
-     * @return bool
-     */
-    public function isDebug(): bool
-    {
-        return $this->debug;
-    }
-
-    /**
-     * @param bool $debug
-     * @return DoctrineWriter
-     */
-    public function setDebug(bool $debug): static
-    {
-        $this->debug = $debug;
-
-        return $this;
-    }
-
-    /**
      * @param int $batchSize
      */
     public function setBatchSize(int $batchSize): void
@@ -194,11 +166,13 @@ class DoctrineWriter implements Writer, FlushableWriter, IndexableWriter
         return $this->autoIncrement;
     }
 
-    public function enableAutoIncrement(){
+    public function enableAutoIncrement(): void
+    {
         $this->autoIncrement = self::AUTO_INCREMENT_ENABLE;
     }
 
-    public function disableAutoIncrement(){
+    public function disableAutoIncrement(): void
+    {
         $this->autoIncrement = self::AUTO_INCREMENT_DISABLE;
     }
 
@@ -207,12 +181,8 @@ class DoctrineWriter implements Writer, FlushableWriter, IndexableWriter
      * Disable Doctrine logging
      * @throws Exception
      */
-    public function prepare()
+    public function prepare(): void
     {
-        if(!$this->debug) {
-            $this->disableLogging();
-        }
-
         if (true === $this->truncate) {
             $this->truncateTable();
         }
@@ -223,12 +193,9 @@ class DoctrineWriter implements Writer, FlushableWriter, IndexableWriter
     /**
      * Re-enable Doctrine logging
      */
-    public function finish()
+    public function finish(): void
     {
         $this->flush();
-        if(!$this->debug) {
-            $this->reEnableLogging();
-        }
     }
 
     /**
@@ -242,7 +209,7 @@ class DoctrineWriter implements Writer, FlushableWriter, IndexableWriter
     /**
      * {@inheritdoc}
      */
-    public function writeItem(array $item)
+    public function writeItem(array $item): void
     {
         $object = $this->findOrCreateItem($item);
 
@@ -258,10 +225,10 @@ class DoctrineWriter implements Writer, FlushableWriter, IndexableWriter
     /**
      * Flush and clear the object manager
      */
-    public function flush()
+    public function flush(): void
     {
         $this->entityManager->flush();
-        $this->entityManager->clear($this->objectName);
+        $this->entityManager->clear();
     }
 
     /**
@@ -298,14 +265,14 @@ class DoctrineWriter implements Writer, FlushableWriter, IndexableWriter
     /**
      * Call a setter of the object
      */
-    protected function setValue(object $object, mixed $value, string $setter)
+    protected function setValue(object $object, mixed $value, string $setter): void
     {
         if (method_exists($object, $setter)) {
             $object->$setter($value);
         }
     }
 
-    protected function updateObject(array $item, object $object)
+    protected function updateObject(array $item, object $object): void
     {
         $inflector = InflectorFactory::createForLanguage(Language::FRENCH)->build();
         $fieldNames = $this->objectMetadata->getFieldNames();
@@ -331,8 +298,9 @@ class DoctrineWriter implements Writer, FlushableWriter, IndexableWriter
 
     /**
      * Add the associated objects in case the item have for persist its relation
+     * @throws ORMException
      */
-    protected function loadAssociationObjectsToObject(array $item, object $object)
+    protected function loadAssociationObjectsToObject(array $item, object $object): void
     {
         foreach ($this->objectMetadata->getAssociationMappings() as $associationMapping) {
 
@@ -352,7 +320,7 @@ class DoctrineWriter implements Writer, FlushableWriter, IndexableWriter
 
     protected function setAutoIncrement(): static
     {
-        $this->objectMetadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
+        $this->objectMetadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
 
         if($this->autoIncrement == self::AUTO_INCREMENT_ENABLE){
             $this->objectMetadata->setIdGenerator(new IdentityGenerator());
@@ -368,7 +336,7 @@ class DoctrineWriter implements Writer, FlushableWriter, IndexableWriter
      * Truncate the database table for this writer
      * @throws Exception
      */
-    protected function truncateTable()
+    protected function truncateTable(): void
     {
         $tableName = $this->objectMetadata->table['name'];
         $connection = $this->entityManager->getConnection();
@@ -376,29 +344,6 @@ class DoctrineWriter implements Writer, FlushableWriter, IndexableWriter
         $query = $connection->getDatabasePlatform()->getTruncateTableSQL($tableName, true);
         $connection->executeQuery($query);
         $connection->executeQuery('SET FOREIGN_KEY_CHECKS=1;');
-    }
-
-    /**
-     * Disable Doctrine logging
-     */
-    protected function disableLogging()
-    {
-        if (!($this->entityManager instanceof EntityManager)) return;
-
-        $config = $this->entityManager->getConnection()->getConfiguration();
-        $this->originalLogger = $config->getSQLLogger();
-        $config->setSQLLogger();
-    }
-
-    /**
-     * Re-enable Doctrine logging
-     */
-    protected function reEnableLogging()
-    {
-        if (!($this->entityManager instanceof EntityManager)) return;
-
-        $config = $this->entityManager->getConnection()->getConfiguration();
-        $config->setSQLLogger($this->originalLogger);
     }
 
     protected function findOrCreateItem(array $item): object
@@ -430,7 +375,7 @@ class DoctrineWriter implements Writer, FlushableWriter, IndexableWriter
     /**
      * @throws UnsupportedDatabaseTypeException
      */
-    protected function ensureSupportedEntityManager(?EntityManager $entityManager)
+    protected function ensureSupportedEntityManager(?EntityManager $entityManager): void
     {
         if (!($entityManager instanceof EntityManager)) {
             throw new UnsupportedDatabaseTypeException($entityManager);

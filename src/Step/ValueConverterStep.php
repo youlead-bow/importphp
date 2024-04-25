@@ -2,6 +2,7 @@
 
 namespace Import\Step;
 
+use Exception;
 use Import\Step;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
@@ -27,7 +28,7 @@ class ValueConverterStep implements CountableStep
 
     /**
      * {@inheritdoc}
-     * @throws \Exception
+     * @throws Exception
      */
     public function process(mixed $item, int $index, callable $next): ?bool
     {
@@ -39,8 +40,8 @@ class ValueConverterStep implements CountableStep
                 try {
                     $value = call_user_func($converter, $orgValue);
                     $accessor->setValue($item, $property, $value);
-                } catch (\Exception $e){
-                    throw new \Exception($property.' '.$e->getMessage());
+                } catch (Exception $e){
+                    throw new Exception($property.' '.$e->getMessage());
                 }
             }
         }

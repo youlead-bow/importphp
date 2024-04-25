@@ -70,7 +70,7 @@ class DateTimeThresholdFilter
      *
      * @param DateTime $value
      */
-    public function setThreshold(DateTime $value)
+    public function setThreshold(DateTime $value): void
     {
         $this->threshold = $value;
     }

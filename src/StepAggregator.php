@@ -5,7 +5,6 @@ namespace Import;
 use Closure;
 use DateTime;
 use Exception;
-use Import\Step\IndexStep;
 use Import\Step\PriorityStep;
 use JetBrains\PhpStorm\Pure;
 use Psr\Log\LoggerAwareInterface;

@@ -110,7 +110,7 @@ class OneToManyReader implements CountableReader
     /**
      * {@inheritdoc}
      */
-    public function next()
+    public function next(): void
     {
         $this->leftReader->next();
         //right reader is iterated in current() method.
@@ -135,7 +135,7 @@ class OneToManyReader implements CountableReader
     /**
      * {@inheritdoc}
      */
-    public function rewind()
+    public function rewind(): void
     {
         $this->leftReader->rewind();
         $this->rightReader->rewind();

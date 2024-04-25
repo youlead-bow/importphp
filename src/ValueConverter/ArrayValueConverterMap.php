@@ -40,9 +40,9 @@ class ArrayValueConverterMap
     /**
      * Convert an item of the array using the converter-map     *
      * @param $item
-     * @return mixed
+     * @return array
      */
-    protected function convertItem(array $item): mixed
+    protected function convertItem(array $item): array
     {
         foreach ($item as $key => $value) {
             if (!isset($this->converters[$key])) {
